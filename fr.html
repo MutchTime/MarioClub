@@ -3,110 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Решение Формулы</title>
+    <title>Калькулятор Формулы</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: 'Verdana', sans-serif;
+            font-family: 'Helvetica Neue', sans-serif;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #f4f4f4;
         }
         .container {
-            width: 100%;
-            max-width: 400px;
             background-color: #fff;
-            padding: 20px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
             text-align: center;
         }
         h1 {
-            font-size: 28px;
+            font-size: 32px;
             color: #333;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-size: 18px;
+            color: #555;
         }
         input {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            font-size: 18px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 12px;
+            margin-top: 5px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
         }
-        button, .link-button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            font-size: 18px;
+        button, .button-link {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            background-color: #007BFF;
-            color: white;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease;
         }
-        button:hover, .link-button:hover {
+        button:hover, .button-link:hover {
             background-color: #0056b3;
         }
-        .formula-output, .result-output {
-            margin-top: 20px;
+        .button-link {
+            display: inline-block;
+            margin-top: 15px;
+            background-color: #6c757d;
+        }
+        .button-link:hover {
+            background-color: #5a6268;
+        }
+        #formula {
+            margin-top: 25px;
             font-size: 20px;
-            color: #007BFF;
+            font-weight: bold;
+            color: #007bff;
+        }
+        #result {
+            margin-top: 10px;
+            font-size: 24px;
+            color: #333;
         }
         footer {
-            margin-top: 20px;
-            color: #888;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
         <h1>Калькулятор Формулы</h1>
         <form id="formulaForm">
             <label for="a">Введите значение a:</label>
-            <input type="number" id="a" placeholder="Значение a" required>
-
+            <input type="number" id="a" required>
+            
             <label for="b">Введите значение b:</label>
-            <input type="number" id="b" placeholder="Значение b" required>
-
+            <input type="number" id="b" required>
+            
             <label for="c">Введите значение c:</label>
-            <input type="number" id="c" placeholder="Значение c" required>
+            <input type="number" id="c" required>
 
-            <button type="button" onclick="calculate()">Посчитать</button>
-            <a href="index.html" class="link-button">На главную</a>
+            <button type="button" onclick="calculate()">Рассчитать</button>
+            <a href="index.html" class="button-link">Вернуться на главную</a>
         </form>
 
-        <div class="formula-output" id="formula">Формула: </div>
-        <div class="result-output" id="result"></div>
-    </div>
+        <div id="formula">Формула: (a * 5 - b + 9 / 2) - (3 * b - 2 * c) * 2 = </div>
+        <div id="result"></div>
 
-    <footer>© Донецк 2024</footer>
+        <footer>г. Донецк 2024</footer>
+    </div>
 
     <script>
         function calculate() {
-            // Получение значений и проверка на пустоту
             var a = parseFloat(document.getElementById('a').value);
             var b = parseFloat(document.getElementById('b').value);
             var c = parseFloat(document.getElementById('c').value);
 
-            if (isNaN(a)  isNaN(b)  isNaN(c)) {
-                document.getElementById('result').innerHTML = "Пожалуйста, введите все значения!";
-                return;
-            }
+            var result = (a * 5 - b + 9 / 2) - ((3 * b - 2 * c) * 2);
 
-            // Формула с правильным приоритетом операций
-            var result = ((a * 5) - b + (9 / 2)) - ((3 * b - 2 * c) * 2);
-
-            // Форматируем строку для отображения формулы
-            var formula = (${a} * 5 - ${b} + 9 / 2) - (3 * ${b} - 2 * ${c}) * 2;
-
-            // Отображение результата и формулы
-            document.getElementById('formula').innerHTML = "Формула: " + formula;
-            document.getElementById('result').innerHTML = "Результат: " + result.toFixed(2);
+            document.getElementById('formula').innerHTML = "Формула: (" + a + " * 5 - " + b + " + 9 / 2) - (3 * " + b + " - 2 * " + c + ") * 2 = " + result;
+            document.getElementById('result').textContent = "Результат: " + result;
         }
     </script>
+    
 </body>
 </html>
