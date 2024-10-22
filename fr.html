@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -92,11 +91,15 @@
             var b = parseFloat(document.getElementById('b').value);
             var c = parseFloat(document.getElementById('c').value);
 
-            var formula = (${a} * 5 - ${b} + 9 / 2) - (3 * ${b} - 2 * ${c}) * 2;
-            var result = (a * 5 - b + 9 / 2) - ((3 * b - 2 * c) * 2);
+            // Исправление операторов и приоритетов
+            var result = ((a * 5) - b + (9 / 2)) - ((3 * b - 2 * c) * 2);
 
+            // Форматируем вывод формулы
+            var formula = (${a} * 5 - ${b} + 9 / 2) - (3 * ${b} - 2 * ${c}) * 2;
+
+            // Выводим формулу и результат
             document.getElementById('formula').innerHTML = "Формула: " + formula;
-            document.getElementById('result').innerHTML = "Результат: " + result;
+            document.getElementById('result').innerHTML = "Результат: " + result.toFixed(2);
         }
     </script>
 </body>
