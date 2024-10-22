@@ -10,11 +10,7 @@
             padding: 0;
             height: 100%;
             font-family: 'Helvetica Neue', sans-serif;
-           background-image: url('https://preview.redd.it/jpa0s2lsfpl51.gif?width=640&crop=smart&auto=webp&s=9d46dda9407bf59def37e58e4a981b46343d4d51');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -94,11 +90,15 @@
         <form id="formulaForm">
             <label for="x">Введите значение x (в градусах или радианах):</label>
             <input type="number" id="x" required step="any">
+            
+            <label for="y">Введите значение y (в градусах или радианах):</label>
+            <input type="number" id="y" required step="any">
+
             <button type="button" onclick="calculate()">Рассчитать</button>
             <a href="index.html" class="button-link">Вернуться на главную</a>
         </form>
 
-        <div id="formula">Формула: \( \sin^2(x) + \cos^2(x) = 1 \)</div>
+        <div id="formula">Формула: \( \sin^2(x) + \cos^2(y) \)</div>
         <div id="result"></div>
 
         <footer>г. Донецк 2024</footer>
@@ -107,15 +107,17 @@
     <script>
         function calculate() {
             var x = parseFloat(document.getElementById('x').value);
+            var y = parseFloat(document.getElementById('y').value);
 
-            // Преобразуем значение x в радианы, если оно введено в градусах
-            var radians = x * Math.PI / 180;
+            // Преобразуем значения x и y в радианы
+            var radiansX = x * Math.PI / 180;
+            var radiansY = y * Math.PI / 180;
 
-            var sinSquared = Math.pow(Math.sin(radians), 2);
-            var cosSquared = Math.pow(Math.cos(radians), 2);
-            var result = sinSquared + cosSquared;
+            var sinSquaredX = Math.pow(Math.sin(radiansX), 2);
+            var cosSquaredY = Math.pow(Math.cos(radiansY), 2);
+            var result = sinSquaredX + cosSquaredY;
 
-            document.getElementById('formula').innerHTML = "Формула: sin²(" + x + ") + cos²(" + x + ") = 1";
+            document.getElementById('formula').innerHTML = "Формула: sin²(" + x + ") + cos²(" + y + ") = " + result.toFixed(2);
             document.getElementById('result').textContent = "Результат: " + result.toFixed(2);
         }
     </script>
