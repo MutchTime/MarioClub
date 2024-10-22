@@ -10,11 +10,7 @@
             padding: 0;
             height: 100%;
             font-family: 'Helvetica Neue', sans-serif;
-            background-image: url('https://preview.redd.it/jpa0s2lsfpl51.gif?width=640&crop=smart&auto=webp&s=9d46dda9407bf59def37e58e4a981b46343d4d51');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -92,20 +88,13 @@
     <div class="container">
         <h1>Калькулятор Формулы</h1>
         <form id="formulaForm">
-            <label for="a">Введите значение a:</label>
-            <input type="number" id="a" required>
-            
-            <label for="b">Введите значение b:</label>
-            <input type="number" id="b" required>
-            
-            <label for="c">Введите значение c:</label>
-            <input type="number" id="c" required>
-
+            <label for="x">Введите значение x (в градусах или радианах):</label>
+            <input type="number" id="x" required step="any">
             <button type="button" onclick="calculate()">Рассчитать</button>
             <a href="index.html" class="button-link">Вернуться на главную</a>
         </form>
 
-        <div id="formula">Формула: (a * 5 - b + 9 / 2) - (3 * b - 2 * c) * 2 = </div>
+        <div id="formula">Формула: \( \sin^2(x) + \cos^2(x) = 1 \)</div>
         <div id="result"></div>
 
         <footer>г. Донецк 2024</footer>
@@ -113,14 +102,17 @@
 
     <script>
         function calculate() {
-            var a = parseFloat(document.getElementById('a').value);
-            var b = parseFloat(document.getElementById('b').value);
-            var c = parseFloat(document.getElementById('c').value);
+            var x = parseFloat(document.getElementById('x').value);
 
-            var result = (a * 5 - b + 9 / 2) - ((3 * b - 2 * c) * 2);
+            // Преобразуем значение x в радианы, если оно введено в градусах
+            var radians = x * Math.PI / 180;
 
-            document.getElementById('formula').innerHTML = "Формула: (" + a + " * 5 - " + b + " + 9 / 2) - (3 * " + b + " - 2 * " + c + ") * 2 = " + result;
-            document.getElementById('result').textContent = "Результат: " + result;
+            var sinSquared = Math.pow(Math.sin(radians), 2);
+            var cosSquared = Math.pow(Math.cos(radians), 2);
+            var result = sinSquared + cosSquared;
+
+            document.getElementById('formula').innerHTML = "Формула: sin²(" + x + ") + cos²(" + x + ") = 1";
+            document.getElementById('result').textContent = "Результат: " + result.toFixed(2);
         }
     </script>
     
