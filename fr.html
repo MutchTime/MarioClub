@@ -87,17 +87,23 @@
 
     <script>
         function calculate() {
+            // Получение значений и проверка на пустоту
             var a = parseFloat(document.getElementById('a').value);
             var b = parseFloat(document.getElementById('b').value);
             var c = parseFloat(document.getElementById('c').value);
 
-            // Исправление операторов и приоритетов
+            if (isNaN(a)  isNaN(b)  isNaN(c)) {
+                document.getElementById('result').innerHTML = "Пожалуйста, введите все значения!";
+                return;
+            }
+
+            // Формула с правильным приоритетом операций
             var result = ((a * 5) - b + (9 / 2)) - ((3 * b - 2 * c) * 2);
 
-            // Форматируем вывод формулы
+            // Форматируем строку для отображения формулы
             var formula = (${a} * 5 - ${b} + 9 / 2) - (3 * ${b} - 2 * ${c}) * 2;
 
-            // Выводим формулу и результат
+            // Отображение результата и формулы
             document.getElementById('formula').innerHTML = "Формула: " + formula;
             document.getElementById('result').innerHTML = "Результат: " + result.toFixed(2);
         }
