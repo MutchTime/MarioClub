@@ -1,117 +1,124 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра про Соника</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: #87CEEB;
-            height: 100vh;
-            margin: 0;
-        }
-        #game {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            overflow: hidden;
-            border: 2px solid #333;
-            background-color: #f0f0f0;
-        }
-        #sonic {
-            width: 50px;
-            height: 50px;
-            position: absolute;
-            bottom: 0;
-            left: 50px;
-            background-color: blue;
-            border-radius: 50%;
-        }
-        .obstacle {
-            width: 40px;
-            height: 40px;
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background-color: red;
-        }
-    </style>
+    <title>Sonic Game Prototype</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Игра про Соника</h1>
-    <p>Нажмите пробел, чтобы прыгнуть и избежать препятствий!</p>
-    <div id="game">
+    <h1>Игра в стиле Sonic</h1>
+    <div id="gameArea">
         <div id="sonic"></div>
     </div>
-
-    <script>
-        const sonic = document.getElementById("sonic");
-        const game = document.getElementById("game");
-        let isJumping = false;
-        let gravity = 0.9;
-        let position = 0;
-
-        function jump() {
-            if (isJumping) return;
-            isJumping = true;
-            let count = 0;
-            const jumpInterval = setInterval(() => {
-                // Прыжок вверх
-                if (count < 15) {
-                    position += 20;
-                    sonic.style.bottom = position + 'px';
-                } else {
-                    // Падение вниз
-                    clearInterval(jumpInterval);
-                    const fallInterval = setInterval(() => {
-                        if (position <= 0) {
-                            clearInterval(fallInterval);
-                            isJumping = false;
-                        }
-                        position -= 5 * gravity;
-                        sonic.style.bottom = position + 'px';
-                    }, 20);
-                }
-                count++;
-            }, 20);
-        }
-
-        function createObstacle() {
-            const obstacle = document.createElement("div");
-            obstacle.classList.add("obstacle");
-            game.appendChild(obstacle);
-            let obstaclePosition = game.offsetWidth;
-
-            // Движение препятствия
-            const obstacleInterval = setInterval(() => {
-                if (obstaclePosition < -40) {
-                    clearInterval(obstacleInterval);
-                    game.removeChild(obstacle);
-                } else if (
-                    obstaclePosition > 50 && obstaclePosition < 90 &&
-                    position < 50
-                ) {
-                    alert("Игра окончена! Вы столкнулись с препятствием.");
-                    clearInterval(obstacleInterval);
-                    document.location.reload();
-                }
-                obstaclePosition -= 5;
-                obstacle.style.left = obstaclePosition + 'px';
-            }, 20);
-
-            setTimeout(createObstacle, Math.random() * 3000 + 2000); // Следующее препятствие
-        }
-
-        document.addEventListener("keydown", (event) => {
-            if (event.code === "Space") jump();
-        });
-
-        createObstacle(); // Запуск первого препятствия
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background-color: #87CEEB;
+}
+
+h1 {
+    margin: 20px;
+    color: #333;
+}
+
+#gameArea {
+    position: relative;
+    width: 800px;
+    height: 400px;
+    background-color: #98FB98;
+    overflow: hidden;
+    border: 2px solid #333;
+}
+
+#sonic {
+    position: absolute;
+    bottom: 10px;
+    left: 50px;
+    width: 40px;
+    height: 40px;
+    background-color: blue;
+    border-radius: 50%;
+}
+const sonic = document.getElementById("sonic");
+const gameArea = document.getElementById("gameArea");
+let isJumping = false;
+let isMovingRight = false;
+let isMovingLeft = false;
+let velocityY = 0;
+const gravity = 0.5;
+const speed = 5;
+
+function jump() {
+    if (!isJumping) {
+        velocityY = -10;
+        isJumping = true;
+    }
+}
+
+function moveRight() {
+    isMovingRight = true;
+}
+
+function moveLeft() {
+    isMovingLeft = true;
+}
+
+function stopMoveRight() {
+    isMovingRight = false;
+}
+
+function stopMoveLeft() {
+    isMovingLeft = false;
+}
+
+function gameLoop() {
+    let sonicPosition = sonic.getBoundingClientRect();
+    let gameAreaPosition = gameArea.getBoundingClientRect();
+
+    // Движение вправо и влево
+    if (isMovingRight && sonicPosition.right < gameAreaPosition.right) {
+        sonic.style.left = sonicPosition.left + speed + "px";
+    }
+    if (isMovingLeft && sonicPosition.left > gameAreaPosition.left) {
+        sonic.style.left = sonicPosition.left - speed + "px";
+    }
+
+    // Прыжки и гравитация
+    velocityY += gravity;
+    sonic.style.bottom = (parseFloat(sonic.style.bottom) || 0) + velocityY + "px";
+
+    // Проверка на приземление
+    if (parseFloat(sonic.style.bottom) <= 10) {
+        sonic.style.bottom = "10px";
+        velocityY = 0;
+        isJumping = false;
+    }
+
+    requestAnimationFrame(gameLoop);
+}
+
+// Обработка событий клавиатуры
+document.addEventListener("keydown", (event) => {
+    if (event.code === "ArrowUp") jump();
+    if (event.code === "ArrowRight") moveRight();
+    if (event.code === "ArrowLeft") moveLeft();
+});
+
+document.addEventListener("keyup", (event) => {
+    if (event.code === "ArrowRight") stopMoveRight();
+    if (event.code === "ArrowLeft") stopMoveLeft();
+});
+
+gameLoop();
