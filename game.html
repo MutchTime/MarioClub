@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра Sonic</title>
+    <style>
+        /* Добавьте стили для игры здесь */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #87CEEB;
+        }
+        #game {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        #sonic {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            bottom: 50px;
+            left: 100px;
+            background-color: blue;
+            border-radius: 50%;
+        }
+        .obstacle {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            position: absolute;
+            bottom: 50px;
+            animation: moveObstacle 2s linear infinite;
+        }
+        @keyframes moveObstacle {
+            0% { right: -50px; }
+            100% { right: 100vw; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Игра про Соника</h1>
+    <p>Нажмите пробел, чтобы прыгнуть и избегайте препятствий!</p>
+    <div id="game">
+        <div id="sonic"></div>
+    </div>
+
+    <script>
+        const sonic = document.getElementById("sonic");
+        const game = document.getElementById("game");
+        let isJumping = false;
+        let score = 0;
+
+        function jump() {
+            if (isJumping) return;
+            isJumping = true;
+            let position = 0;
+            let jumpInterval = setInterval(() => {
+                if (position >= 150) {
+                    clearInterval(jumpInterval);
+                    let fallInterval = setInterval(() => {
+                        if (position <= 0) {
+                            clearInterval(fallInterval);
+                            isJumping = false;
+                        }
+                        position -= 5;
+                        sonic.style.bottom = `${position}px`;
+                    }, 20);
+                }
+                position += 5;
+                sonic.style.bottom = `${position}px`;
+            }, 20);
+        }
+
+        document.addEventListener("keydown", (event) => {
+            if (event.code === "Space") {
+                jump();
+            }
+        });
+
+        function createObstacle() {
+            const obstacle = document.createElement("div");
+            obstacle.classList.add("obstacle");
+            game.appendChild(obstacle);
+
+            let obstacleInterval = setInterval(() => {
+                const obstacleRect = obstacle.getBoundingClientRect();
+                const sonicRect = sonic.getBoundingClientRect();
+
+                if (
+                    obstacleRect.left < sonicRect.right &&
+                    obstacleRect.right > sonicRect.left &&
+                    obstacleRect.bottom > sonicRect.top &&
+                    obstacleRect.top < sonicRect.bottom
+                ) {
+                    alert("Игра окончена! Ваш счет: " + score);
+                    location.reload();
+                }
+
+                if (obstacleRect.right < 0) {
+                    clearInterval(obstacleInterval);
+                    game.removeChild(obstacle);
+                    score++;
+                }
+            }, 20);
+        }
+
+        setInterval(createObstacle, 2000);
+    </script>
+</body>
+</html>
