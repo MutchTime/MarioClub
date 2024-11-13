@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Меню игры с выбором персонажа и карты</title>
+    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра с сохранением данных</title>
     <style>
         body, html {
             margin: 0;
@@ -20,7 +19,7 @@
             display: none;
         }
 
-        #menu, #characterSelection, #mapSelection {
+        #nicknameScreen, #menu, #characterSelection, #mapSelection, #shop {
             text-align: center;
             color: white;
         }
@@ -50,7 +49,6 @@
             height: 600px;
         }
 
-        /* Стили для отображения баланса */
         #balance {
             position: absolute;
             top: 20px;
@@ -67,11 +65,11 @@
     </style>
 </head>
 <body>
-    <!-- Ввод никнейма -->
+    <!-- Экран ввода никнейма -->
     <div id="nicknameScreen">
         <h2>Введите свой никнейм:</h2>
         <input type="text" id="nicknameInput" placeholder="Никнейм">
-        <button onclick="loadGame()">Начать игру</button>
+        <button onclick="initializeGame()">Начать игру</button>
     </div>
 
     <!-- Отображение баланса -->
@@ -87,7 +85,7 @@
     <!-- Меню выбора персонажа -->
     <div id="characterSelection" class="hidden">
         <h2>Выберите персонажа</h2>
-        <div id="characterButtons"></div> <!-- Кнопки персонажей генерируются динамически -->
+        <div id="characterButtons"></div>
         <button onclick="backToMenu()">Назад</button>
     </div>
 
@@ -101,10 +99,10 @@
         <button onclick="backToMenu()">Назад</button>
     </div>
 
-    <!-- Меню выбора карты и уровня -->
+    <!-- Меню выбора карты -->
     <div id="mapSelection" class="hidden">
         <h2>Выберите карту</h2>
-        <div id="mapButtons"></div> <!-- Кнопки карт генерируются динамически -->
+        <div id="mapButtons"></div>
         <button onclick="backToCharacterSelection()">Назад</button>
     </div>
 
@@ -130,11 +128,11 @@
         let purchasedCharacters = ["Салага"];
         let unlockedMaps = ["Первая карта"];
 
-        // Карты с наградами
+        // Карты и награды
         const maps = {
-            "Первая карта": { unlocked: true, reward: 100 },
-            "Вторая карта": { unlocked: false, reward: 300 },
-            "Третья карта": { unlocked: false, reward: 500 }
+            "Первая карта": { reward: 100 },
+            "Вторая карта": { reward: 300 },
+            "Третья карта": { reward: 500 }
         };
 
         // Сохранение данных
@@ -148,7 +146,7 @@
         }
 
         // Загрузка данных
-        function loadGame() {
+        function initializeGame() {
             nickname = nicknameInput.value.trim();
             if (!nickname) {
                 alert("Пожалуйста, введите никнейм!");
@@ -161,7 +159,7 @@
                 balance = gameData.balance;
                 purchasedCharacters = gameData.purchasedCharacters;
                 unlockedMaps = gameData.unlockedMaps;
-                alert(`Добро пожаловать, ${nickname}! Ваши данные загружены.`);
+                alert(`Добро пожаловать, ${nickname}! Данные загружены.`);
             } else {
                 alert(`Добро пожаловать, ${nickname}! Начнем новую игру.`);
             }
@@ -228,7 +226,7 @@
         function selectCharacter(character) {
             if (purchasedCharacters.includes(character)) {
                 characterSelection.classList.add("hidden");
-                mapSelection.classList.remove("hidden"); // Переходим к выбору карты
+                mapSelection.classList.remove("hidden");
                 displayAvailableMaps();
             } else {
                 alert(`Персонаж ${character} не куплен. Купите его в магазине.`);
@@ -239,14 +237,14 @@
         function displayAvailableMaps() {
             mapButtons.innerHTML = ""; // Очистка предыдущих кнопок
 
-            for (const [mapName, mapData] of Object.entries(maps)) {
+            Object.keys(maps).forEach(mapName => {
                 if (unlockedMaps.includes(mapName)) {
                     const button = document.createElement("button");
                     button.textContent = `${mapName}`;
                     button.onclick = () => selectMap(mapName);
                     mapButtons.appendChild(button);
                 }
-            }
+            });
         }
 
         // Переход назад к выбору персонажа
@@ -258,15 +256,41 @@
         // Выбор карты
         function selectMap(map) {
             mapSelection.classList.add("hidden");
-            gameCanvas.classList.remove("hidden"); // Переходим к игровому экрану
+            gameCanvas.classList.remove("hidden");
             startGame(map);
         }
 
         // Завершение карты и начисление награды
         function completeMap(map) {
-            const currentMap = maps[map];
-            alert(`Карта "${map}" пройдена! Вы получили ${currentMap.reward} руб.`);
+            const reward = maps[map].reward;
+            alert(`Карта "${map}" пройдена! Вы получили ${reward} руб.`);
 
-            balance += currentMap.reward;
+            balance += reward;
+            if (!unlockedMaps.includes("Вторая карта") && map === "Первая карта") {
+                unlockedMaps.push("Вторая карта");
+            } else if (!unlockedMaps.includes("Третья карта") && map === "Вторая карта") {
+                unlockedMaps.push("Третья карта");
+            }
+
             updateBalance();
-           
+            saveGameData();
+            goToCharacterSelection();
+        }
+
+        // Запуск игры
+        function startGame(map) {
+            initGame();
+            setTimeout(() => completeMap(map), 5000);
+        }
+
+        // Инициализация игры
+        function initGame() {
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            console.log("Игра началась");
+        }
+
+        // Инициализация начального баланса
+        updateBalance();
+    </script>
+</body>
+</html>
