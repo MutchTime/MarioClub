@@ -104,7 +104,6 @@
     <canvas id="gameCanvas" class="hidden"></canvas>
 
     <script>
-        // Элементы HTML
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
         const characterSelection = document.getElementById("characterSelection");
@@ -126,21 +125,18 @@
         let bullets = [];
         let playerDamage = 0;
 
-        // Настройки оружия персонажей
         const characterSettings = {
             "Салага": { damage: 50 },
             "Солдат": { damage: 50 },
             "Маг": { damage: 100 }
         };
 
-        // Настройки карт и награды
         const maps = {
             "Первая карта": { reward: 100, enemiesCount: 100 },
             "Вторая карта": { reward: 300, enemiesCount: 200 },
             "Третья карта": { reward: 500, enemiesCount: 300 }
         };
 
-        // Инициализация игры
         function initializeGame() {
             nickname = nicknameInput.value.trim();
             if (!nickname) {
@@ -165,22 +161,18 @@
             balanceDisplay.classList.remove("hidden");
         }
 
-        // Обновление баланса
         function updateBalance() {
             balanceDisplay.textContent = `Баланс: ${balance} руб.`;
         }
 
-        // Переход к выбору персонажа
         function goToCharacterSelection() {
             menu.classList.add("hidden");
             characterSelection.classList.remove("hidden");
             displayPurchasedCharacters();
         }
 
-        // Отображение купленных персонажей
         function displayPurchasedCharacters() {
             characterButtons.innerHTML = ""; 
-
             purchasedCharacters.forEach(character => {
                 const button = document.createElement("button");
                 button.textContent = character;
@@ -189,7 +181,6 @@
             });
         }
 
-        // Выбор персонажа
         function selectCharacter(character) {
             if (purchasedCharacters.includes(character)) {
                 selectedCharacter = character;
@@ -202,13 +193,11 @@
             }
         }
 
-        // Переход к магазину
         function goToShop() {
             menu.classList.add("hidden");
             shop.classList.remove("hidden");
         }
 
-        // Покупка персонажа
         function buyCharacter(character, cost) {
             if (purchasedCharacters.includes(character)) {
                 alert(`${character} уже куплен.`);
@@ -223,7 +212,6 @@
             }
         }
 
-        // Переход к выбору карты
         function displayAvailableMaps() {
             mapButtons.innerHTML = ""; 
             Object.keys(maps).forEach(mapName => {
@@ -236,7 +224,6 @@
             });
         }
 
-        // Инициализация монстров
         function initEnemies(count) {
             enemies = [];
             for (let i = 0; i < count; i++) {
@@ -244,7 +231,6 @@
             }
         }
 
-        // Выбор карты и начало игры
         function selectMap(map) {
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden");
@@ -252,12 +238,10 @@
             startGame(map);
         }
 
-        // Обновление пуль
         function updateBullets() {
             bullets.forEach((bullet, bulletIndex) => {
                 bullet.y -= 10;
                 if (bullet.y < 0) bullets.splice(bulletIndex, 1);
-                // Проверка попадания пули во врага
                 enemies.forEach((enemy, enemyIndex) => {
                     if (
                         bullet.x < enemy.x + 20 &&
@@ -273,12 +257,10 @@
             });
         }
 
-        // Стрельба
         function shoot() {
             bullets.push({ x: player.x + 10, y: player.y });
         }
 
-        // Основной игровой цикл
         function gameLoop() {
             ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
             updateBullets();
@@ -290,22 +272,15 @@
             }
         }
 
-        // Отрисовка игроков, пуль и врагов
         function drawEntities() {
-            // Отрисовка игрока
             ctx.fillStyle = "blue";
             ctx.fillRect(player.x, player.y, 20, 20);
-
-            // Отрисовка пуль
             ctx.fillStyle = "yellow";
             bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 10));
-
-            // Отрисовка врагов
             ctx.fillStyle = "red";
             enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
         }
 
-        // Завершение уровня
         function endGame() {
             gameCanvas.classList.add("hidden");
             balance += maps[selectedMap].reward;
@@ -315,10 +290,30 @@
             goToCharacterSelection();
         }
 
+        function backToMenu() {
+            characterSelection.classList.add("hidden");
+            mapSelection.classList.add("hidden");
+            shop.classList.add("hidden");
+            menu.classList.remove("hidden");
+        }
+
+        function backToCharacterSelection() {
+            mapSelection.classList.add("hidden");
+            characterSelection.classList.remove("hidden");
+        }
+
         window.addEventListener("click", shoot);
 
-        // Игрок
         const player = { x: 400, y: 550 };
+
+        function saveGameData() {
+            const gameData = {
+                balance,
+                purchasedCharacters,
+                unlockedMaps
+            };
+            localStorage.setItem(nickname, JSON.stringify(gameData));
+        }
     </script>
 </body>
 </html>
