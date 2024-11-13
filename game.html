@@ -290,8 +290,12 @@
         }
 
         function shoot(e) {
-            // Вычисляем угол между игроком и мышкой
-            const angle = Math.atan2(e.clientY - player.y, e.clientX - player.x);
+            const rect = gameCanvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            // Вычисляем угол между игроком и курсором
+            const angle = Math.atan2(mouseY - player.y, mouseX - player.x);
             const speed = 10;
             bullets.push({
                 x: player.x + 10,
