@@ -122,6 +122,12 @@
     <!-- Игровой канвас -->
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
+    <!-- Аудио для 8bit музыки -->
+    <audio id="backgroundMusic" loop>
+        <source src="8bit-music.mp3" type="audio/mpeg">
+        Ваш браузер не поддерживает элемент <code>audio</code>.
+    </audio>
+
     <script>
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
@@ -135,6 +141,7 @@
         const monsterCountDisplay = document.getElementById("monsterCount");
         const playerHPDisplay = document.getElementById("playerHP");
         const nicknameInput = document.getElementById("nicknameInput");
+        const backgroundMusic = document.getElementById("backgroundMusic");
         const ctx = gameCanvas.getContext("2d");
 
         let nickname = "";
@@ -185,6 +192,19 @@
             nicknameScreen.classList.add("hidden");
             menu.classList.remove("hidden");
             balanceDisplay.classList.remove("hidden");
+            playBackgroundMusic();
+        }
+
+        function playBackgroundMusic() {
+            backgroundMusic.volume = 0.5;
+            backgroundMusic.play().catch((error) => {
+                console.error("Не удалось воспроизвести музыку:", error);
+            });
+        }
+
+        function stopBackgroundMusic() {
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
         }
 
         function updateBalance() {
