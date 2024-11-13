@@ -121,6 +121,12 @@
     <!-- Игровой канвас -->
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
+    <!-- Музыка в игре -->
+    <audio id="backgroundMusic" loop>
+        <source src="background-music.mp3" type="audio/mpeg">
+        Ваш браузер не поддерживает элемент <code>audio</code>.
+    </audio>
+
     <script>
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
@@ -134,6 +140,7 @@
         const monsterCountDisplay = document.getElementById("monsterCount");
         const playerHPDisplay = document.getElementById("playerHP");
         const nicknameInput = document.getElementById("nicknameInput");
+        const backgroundMusic = document.getElementById("backgroundMusic");
         const ctx = gameCanvas.getContext("2d");
 
         let nickname = "";
@@ -184,6 +191,17 @@
             nicknameScreen.classList.add("hidden");
             menu.classList.remove("hidden");
             balanceDisplay.classList.remove("hidden");
+            playBackgroundMusic();
+        }
+
+        function playBackgroundMusic() {
+            backgroundMusic.volume = 0.5;
+            backgroundMusic.play();
+        }
+
+        function stopBackgroundMusic() {
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
         }
 
         function updateBalance() {
@@ -261,7 +279,7 @@
                 enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
             }
             monstersRemaining = count;
-            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
+            monsterCountDisplay.textContent = `Монстров: ${totalMonстров - monstersRemaining}`;
             monsterCountDisplay.classList.remove("hidden");
             playerHPDisplay.classList.remove("hidden");
         }
@@ -304,12 +322,12 @@
                         if (enemy.hp <= 0) {
                             enemies.splice(enemyIndex, 1);
                             monstersRemaining--;
-                            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
+                            monsterCountDisplay.textContent = `Монстров: ${totalMonстров - monstersRemaining}`;
 
                             if (monstersRemaining === 0 && totalMonsters > 0) {
-                                const remainingMonsters = Math.min(15, totalMonsters - monstersRemaining);
+                                const remainingMonsters = Math.min(15, totalMonстров - monstersRemaining);
                                 initEnemies(remainingMonsters);
-                                totalMonsters -= remainingMonsters;
+                                totalMonстры -= remainingMonстр;es;
                             }
                         }
                     }
@@ -376,16 +394,28 @@
             gameCanvas.style.display = "none";
             monsterCountDisplay.classList.add("hidden");
             playerHPDisplay.classList.add("hidden");
+            stopBackgroundMusic();
             
             if (playerHP > 0) {
                 balance += maps[selectedMap].reward;
                 updateBalance();
                 saveGameData();
                 alert("Уровень завершен!");
+                unlockNextMap();
             } else {
                 alert("Игра окончена! Вы проиграли.");
             }
             goToCharacterSelection();
+        }
+
+        function unlockNextMap() {
+            if (selectedMap === "Первая карта" && !unlockedMaps.includes("Вторая карта")) {
+                unlockedMaps.push("Вторая карта");
+                alert("Вторая карта разблокирована!");
+            } else if (selectedMap === "Вторая карта" && !unlockedMaps.includes("Третья карта")) {
+                unlockedMaps.push("Третья карта");
+                alert("Третья карта разблокирована!");
+            }
         }
 
         function backToMenu() {
@@ -399,34 +429,6 @@
             mapSelection.classList.add("hidden");
             characterSelection.classList.remove("hidden");
         }
-        function endGame() {
-    isGameRunning = false;
-    gameCanvas.style.display = "none";
-    monsterCountDisplay.classList.add("hidden");
-    playerHPDisplay.classList.add("hidden");
-    
-    if (playerHP > 0) {
-        balance += maps[selectedMap].reward;
-        updateBalance();
-
-        // Разблокируем следующую карту
-        if (selectedMap === "Первая карта" && !unlockedMaps.includes("Вторая карта")) {
-            unlockedMaps.push("Вторая карта");
-            alert("Вторая карта разблокирована!");
-        } else if (selectedMap === "Вторая карта" && !unlockedMaps.includes("Третья карта")) {
-            unlockedMaps.push("Третья карта");
-            alert("Третья карта разблокирована!");
-        }
-
-        saveGameData();
-        alert("Уровень завершен!");
-    } else {
-        alert("Игра окончена! Вы проиграли.");
-    }
-
-    goToCharacterSelection();
-}
-
 
         const player = { x: 400, y: 550, speed: 5 };
         const keys = {};
