@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра с монстрами и движением</title>
+    <title>Игра с монстрами и направленной стрельбой</title>
     <style>
         body, html {
             margin: 0;
@@ -260,8 +260,16 @@
 
         function updateBullets() {
             bullets.forEach((bullet, bulletIndex) => {
-                bullet.y -= 10;
-                if (bullet.y < 0) bullets.splice(bulletIndex, 1);
+                bullet.x += bullet.dx;
+                bullet.y += bullet.dy;
+
+                // Удаляем пулю, если она выходит за пределы экрана
+                if (bullet.x < 0 || bullet.x > gameCanvas.width || bullet.y < 0 || bullet.y > gameCanvas.height) {
+                    bullets.splice(bulletIndex, 1);
+                    return;
+                }
+
+                // Проверка попадания пули во врага
                 enemies.forEach((enemy, enemyIndex) => {
                     if (
                         bullet.x < enemy.x + 20 &&
@@ -281,8 +289,16 @@
             });
         }
 
-        function shoot() {
-            bullets.push({ x: player.x + 10, y: player.y });
+        function shoot(e) {
+            // Вычисляем угол между игроком и мышкой
+            const angle = Math.atan2(e.clientY - player.y, e.clientX - player.x);
+            const speed = 10;
+            bullets.push({
+                x: player.x + 10,
+                y: player.y,
+                dx: Math.cos(angle) * speed,
+                dy: Math.sin(angle) * speed
+            });
         }
 
         function gameLoop() {
@@ -303,7 +319,7 @@
             ctx.fillStyle = "blue";
             ctx.fillRect(player.x, player.y, 20, 20);
             ctx.fillStyle = "yellow";
-            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 10));
+            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
             ctx.fillStyle = "red";
             enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
         }
@@ -350,7 +366,8 @@
             if (keys["ArrowRight"] && player.x < gameCanvas.width - 20) player.x += player.speed;
         }
 
-        window.addEventListener("click", shoot);
+        // Событие стрельбы по нажатию мыши
+        gameCanvas.addEventListener("click", shoot);
 
         function saveGameData() {
             const gameData = {
