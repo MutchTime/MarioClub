@@ -261,7 +261,7 @@
                 enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
             }
             monstersRemaining = count;
-            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
+            monsterCountDisplay.textContent = `Монстров: ${monstersRemaining}`;
             monsterCountDisplay.classList.remove("hidden");
             playerHPDisplay.classList.remove("hidden");
         }
@@ -270,7 +270,9 @@
             selectedMap = map; 
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden");
+            gameCanvas.style.display = "block";
             totalMonsters = maps[map].totalEnemies;
+            monstersRemaining = totalMonsters;
             initEnemies(15); 
             isGameRunning = true;
             gameLoop();
@@ -360,13 +362,38 @@
 
             ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
             movePlayer();
+            updateBullets();
+            updateEnemies();
             drawEntities();
-            requestAnimationFrame(gameLoop);
+            if (playerHP > 0 && monstersRemaining > 0) {
+                requestAnimationFrame(gameLoop);
+            } else {
+                endGame();
+            }
+        }
+
+        function updateBullets() {
+            bullets.forEach((bullet, bulletIndex) => {
+                bullet.y -= 5; // направление выстрела вверх
+                if (bullet.y < 0) bullets.splice(bulletIndex, 1);
+            });
+        }
+
+        function updateEnemies() {
+            enemies.forEach((enemy, index) => {
+                ctx.fillStyle = "red";
+                ctx.fillRect(enemy.x, enemy.y, 20, 20);
+            });
         }
 
         function drawEntities() {
             ctx.fillStyle = "blue";
             ctx.fillRect(player.x, player.y, 20, 20);
+
+            bullets.forEach(bullet => {
+                ctx.fillStyle = "yellow";
+                ctx.fillRect(bullet.x, bullet.y, 5, 5);
+            });
         }
     </script>
 </body>
