@@ -51,8 +51,12 @@
             color: white;
         }
         
-        #characterButtons {
+        #characterButtons, #mapButtons {
             margin-top: 20px;
+        }
+
+        .character-info {
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -85,10 +89,15 @@
     <div id="shop" class="hidden">
         <h2>Магазин</h2>
         <p>Купите персонажа:</p>
-        <button onclick="buyCharacter('Салага', 0)">Салага - Бесплатно</button>
-        <button onclick="buyCharacter('Солдат', 1000)">Солдат - 1000 руб.</button>
-        <button onclick="buyCharacter('Маг', 2500)">Маг - 2500 руб.</button>
+        <div id="shopCharacters"></div> <!-- Здесь будут отображены персонажи с характеристиками для покупки -->
         <button onclick="backToMenu()">Назад</button>
+    </div>
+
+    <!-- Меню выбора карты -->
+    <div id="mapSelection" class="hidden">
+        <h2>Выберите уровень</h2>
+        <div id="mapButtons"></div> <!-- Здесь будут отображены карты уровней -->
+        <button onclick="backToCharacterSelection()">Назад</button>
     </div>
 
     <script>
@@ -96,14 +105,24 @@
         const menu = document.getElementById("menu");
         const characterSelection = document.getElementById("characterSelection");
         const characterButtons = document.getElementById("characterButtons");
+        const mapSelection = document.getElementById("mapSelection");
+        const mapButtons = document.getElementById("mapButtons");
         const shop = document.getElementById("shop");
+        const shopCharacters = document.getElementById("shopCharacters");
         const balanceDisplay = document.getElementById("balance");
         const nicknameInput = document.getElementById("nicknameInput");
 
         let nickname = "";
         let balance = 500;
         let purchasedCharacters = ["Салага"];
-        let unlockedMaps = ["Первая карта"];
+        let unlockedMaps = [1];  // По умолчанию разблокирован первый уровень
+
+        // Персонажи с характеристиками
+        const characters = {
+            "Салага": { weapon: "Пистолет", hp: 50, cost: 0 },
+            "Солдат": { weapon: "Пистолет-пулемет", hp: 75, cost: 1000 },
+            "Маг": { weapon: "Магическая палочка", hp: 100, cost: 2500 }
+        };
 
         // Инициализация игры
         function initializeGame() {
@@ -149,22 +168,83 @@
             purchasedCharacters.forEach(character => {
                 const button = document.createElement("button");
                 button.textContent = character;
-                button.onclick = () => alert(`Вы выбрали персонажа: ${character}`);
+                button.onclick = () => selectCharacter(character);
                 characterButtons.appendChild(button);
             });
+        }
+
+        // Переход к выбору карты (уровня)
+        function selectCharacter(character) {
+            console.log(`Выбран персонаж: ${character}`);
+            characterSelection.classList.add("hidden");
+            mapSelection.classList.remove("hidden");
+            displayAvailableMaps();
+        }
+
+        // Показать список доступных уровней (карт)
+        function displayAvailableMaps() {
+            mapButtons.innerHTML = ""; // Очистить предыдущие кнопки уровней
+
+            for (let level = 1; level <= 5; level++) {
+                const button = document.createElement("button");
+                button.textContent = `Уровень ${level}`;
+                button.disabled = !unlockedMaps.includes(level);  // Заблокировать, если уровень не разблокирован
+                button.onclick = () => selectMap(level);
+                mapButtons.appendChild(button);
+            }
+        }
+
+        // Выбор уровня
+        function selectMap(level) {
+            alert(`Вы выбрали уровень ${level}`);
+            if (!unlockedMaps.includes(level + 1) && level < 5) {
+                unlockedMaps.push(level + 1); // Разблокировать следующий уровень
+            }
+            saveGameData();
+            displayAvailableMaps(); // Обновить доступные карты после завершения уровня
         }
 
         // Переход к магазину
         function goToShop() {
             menu.classList.add("hidden");
             shop.classList.remove("hidden");
+            displayShopCharacters();
+        }
+
+        // Показать список персонажей с характеристиками в магазине
+        function displayShopCharacters() {
+            shopCharacters.innerHTML = ""; // Очистить предыдущие элементы
+
+            for (const character in characters) {
+                const charData = characters[character];
+                const charDiv = document.createElement("div");
+                charDiv.classList.add("character-info");
+
+                const button = document.createElement("button");
+                button.textContent = `${character} - ${charData.cost === 0 ? "Бесплатно" : `${charData.cost} руб.`}`;
+                button.onclick = () => buyCharacter(character, charData.cost);
+                
+                const charInfo = document.createElement("p");
+                charInfo.innerHTML = `Оружие: ${charData.weapon}<br>HP: ${charData.hp}`;
+
+                charDiv.appendChild(button);
+                charDiv.appendChild(charInfo);
+                shopCharacters.appendChild(charDiv);
+            }
         }
 
         // Переход назад в главное меню
         function backToMenu() {
             characterSelection.classList.add("hidden");
+            mapSelection.classList.add("hidden");
             shop.classList.add("hidden");
             menu.classList.remove("hidden");
+        }
+
+        // Переход назад к выбору персонажа
+        function backToCharacterSelection() {
+            mapSelection.classList.add("hidden");
+            characterSelection.classList.remove("hidden");
         }
 
         // Покупка персонажа
@@ -178,19 +258,8 @@
                 saveGameData();
                 alert(`${character} куплен!`);
             } else {
-                alert("Недостаточно средств.");
+                alert("Недостаточно средств.`);
             }
         }
 
         // Сохранение данных
-        function saveGameData() {
-            const gameData = {
-                balance,
-                purchasedCharacters,
-                unlockedMaps
-            };
-            localStorage.setItem(nickname, JSON.stringify(gameData));
-        }
-    </script>
-</body>
-</html>
