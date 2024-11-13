@@ -93,6 +93,7 @@
         <h1>Моя Игра</h1>
         <button onclick="goToCharacterSelection()">Играть</button>
         <button onclick="goToShop()">Магазин</button>
+        <button onclick="playBackgroundMusic()">Включить музыку</button>
     </div>
 
     <!-- Меню выбора персонажа -->
@@ -192,7 +193,6 @@
             nicknameScreen.classList.add("hidden");
             menu.classList.remove("hidden");
             balanceDisplay.classList.remove("hidden");
-            playBackgroundMusic();
         }
 
         function playBackgroundMusic() {
@@ -447,27 +447,4 @@
 
         function movePlayer() {
             if (keys["ArrowUp"] && player.y > 0) player.y -= player.speed;
-            if (keys["ArrowDown"] && player.y < gameCanvas.height - 20) player.y += player.speed;
-            if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
-            if (keys["ArrowRight"] && player.x < gameCanvas.width - 20) player.x += player.speed;
-        }
-
-        gameCanvas.addEventListener("mousemove", (e) => {
-            const rect = gameCanvas.getBoundingClientRect();
-            targetX = e.clientX - rect.left;
-            targetY = e.clientY - rect.top;
-        });
-
-        gameCanvas.addEventListener("click", shoot);
-
-        function saveGameData() {
-            const gameData = {
-                balance,
-                purchasedCharacters,
-                unlockedMaps
-            };
-            localStorage.setItem(nickname, JSON.stringify(gameData));
-        }
-    </script>
-</body>
-</html>
+            if (keys["ArrowDown"] && player.y < gameCanvas.height - 20)
