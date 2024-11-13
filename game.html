@@ -91,7 +91,7 @@
     <!-- Меню выбора карты и уровня -->
     <div id="mapSelection" class="hidden">
         <h2>Выберите карту и уровень</h2>
-        <div id="mapButtons"></div> <!-- Кнопки карт генерируются динамически -->
+        <div id="mapButtons"></div> <!-- Кнопки карт и уровней генерируются динамически -->
         <button onclick="backToCharacterSelection()">Назад</button>
     </div>
 
@@ -113,14 +113,15 @@
         let balance = 500;  // Начальный баланс
         let selectedCharacter = null;
         let selectedMap = null;
-        let currentLevel = 1;
+        let currentLevel = null;
+
         const purchasedCharacters = ["Салага"];  // По умолчанию "Салага" доступен бесплатно
 
-        // Карты с уровнями сложности
+        // Карты и уровни сложности
         const maps = {
             "Начальная": { levels: ["Начальный", "Продвинутый"], unlocked: true },
             "Продвинутая": { levels: ["Начальный", "Продвинутый"], unlocked: false },
-            "Магическая": { levels: ["Начальный", "Продвинутый", "Эксперт"], unlocked: false }
+            "Магическая": { levels: ["Начальный", "Продвинутый"], unlocked: false }
         };
 
         // Обновление баланса на экране
