@@ -90,8 +90,8 @@
 
     <!-- Меню выбора карты и уровня -->
     <div id="mapSelection" class="hidden">
-        <h2>Выберите карту и уровень</h2>
-        <div id="mapButtons"></div> <!-- Кнопки карт и уровней генерируются динамически -->
+        <h2>Выберите карту</h2>
+        <div id="mapButtons"></div> <!-- Кнопки карт генерируются динамически -->
         <button onclick="backToCharacterSelection()">Назад</button>
     </div>
 
@@ -113,15 +113,14 @@
         let balance = 500;  // Начальный баланс
         let selectedCharacter = null;
         let selectedMap = null;
-        let currentLevel = null;
 
         const purchasedCharacters = ["Салага"];  // По умолчанию "Салага" доступен бесплатно
 
-        // Карты и уровни сложности
+        // Карты с уровнями и наградами
         const maps = {
-            "Начальная": { levels: ["Начальный", "Продвинутый"], unlocked: true, reward: 200 },
-            "Продвинутая": { levels: ["Начальный", "Продвинутый"], unlocked: false, reward: 400 },
-            "Магическая": { levels: ["Начальный", "Продвинутый"], unlocked: false, reward: 0 }
+            "Первая карта": { unlocked: true, reward: 100 },
+            "Вторая карта": { unlocked: false, reward: 300 },
+            "Третья карта": { unlocked: false, reward: 500 }
         };
 
         // Обновление баланса на экране
@@ -180,25 +179,23 @@
             if (purchasedCharacters.includes(character)) {
                 selectedCharacter = character;
                 characterSelection.classList.add("hidden");
-                mapSelection.classList.remove("hidden"); // Переходим к выбору карты и уровня
+                mapSelection.classList.remove("hidden"); // Переходим к выбору карты
                 displayAvailableMaps();
             } else {
                 alert(`Персонаж ${character} не куплен. Купите его в магазине.`);
             }
         }
 
-        // Отображение доступных карт и их уровней
+        // Отображение доступных карт
         function displayAvailableMaps() {
             mapButtons.innerHTML = ""; // Очистка предыдущих кнопок
 
             for (const [mapName, mapData] of Object.entries(maps)) {
                 if (mapData.unlocked) {
-                    mapData.levels.forEach(level => {
-                        const button = document.createElement("button");
-                        button.textContent = `${mapName} - ${level}`;
-                        button.onclick = () => selectMap(mapName, level);
-                        mapButtons.appendChild(button);
-                    });
+                    const button = document.createElement("button");
+                    button.textContent = `${mapName}`;
+                    button.onclick = () => selectMap(mapName);
+                    mapButtons.appendChild(button);
                 }
             }
         }
@@ -209,41 +206,32 @@
             characterSelection.classList.remove("hidden");
         }
 
-        // Выбор карты и уровня
-        function selectMap(map, level) {
+        // Выбор карты
+        function selectMap(map) {
             selectedMap = map;
-            currentLevel = level;
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden"); // Переходим к игровому экрану
             startGame();
         }
 
-        // Завершение уровня и начисление награды
-        function completeLevel() {
+        // Завершение карты и начисление награды
+        function completeMap() {
             const currentMap = maps[selectedMap];
-            const levelIndex = currentMap.levels.indexOf(currentLevel);
-            
-            if (levelIndex < currentMap.levels.length - 1) {
-                currentLevel = currentMap.levels[levelIndex + 1];  // Переход на следующий уровень
-                alert(`Переход на уровень "${currentLevel}" на карте ${selectedMap}`);
-            } else {
-                alert(`Карта ${selectedMap} пройдена!`);
-                if (currentMap.reward > 0) {
-                    balance += currentMap.reward;
-                    updateBalance();
-                    alert(`Вы получили ${currentMap.reward} руб. за прохождение карты ${selectedMap}!`);
-                }
-                unlockNextMap();
-                goToCharacterSelection(); // Возвращаемся к выбору персонажа после завершения карты
-            }
+            alert(`Карта "${selectedMap}" пройдена! Вы получили ${currentMap.reward} руб.`);
+
+            balance += currentMap.reward;
+            updateBalance();
+
+            unlockNextMap();
+            goToCharacterSelection(); // Возвращаемся к выбору персонажа после завершения карты
         }
 
         // Разблокировка следующей карты
         function unlockNextMap() {
-            if (selectedMap === "Начальная") {
-                maps["Продвинутая"].unlocked = true;
-            } else if (selectedMap === "Продвинутая") {
-                maps["Магическая"].unlocked = true;
+            if (selectedMap === "Первая карта") {
+                maps["Вторая карта"].unlocked = true;
+            } else if (selectedMap === "Вторая карта") {
+                maps["Третья карта"].unlocked = true;
             }
         }
 
@@ -255,7 +243,7 @@
         // Инициализация игры
         function initGame() {
             ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);  // Очистка экрана
-            console.log("Игра началась с персонажем:", selectedCharacter, "на карте:", selectedMap, "уровень:", currentLevel);
+            console.log("Игра началась с персонажем:", selectedCharacter, "на карте:", selectedMap);
             gameLoop();
         }
 
@@ -265,10 +253,10 @@
             ctx.fillStyle = "white";
             ctx.font = "24px Arial";
             ctx.fillText(`Персонаж: ${selectedCharacter}`, 50, 50);
-            ctx.fillText(`Карта: ${selectedMap}, Уровень: ${currentLevel}`, 50, 80);
+            ctx.fillText(`Карта: ${selectedMap}`, 50, 80);
 
-            // Для примера завершение уровня через 5 секунд
-            setTimeout(completeLevel, 5000);
+            // Для примера завершение карты через 5 секунд
+            setTimeout(completeMap, 5000);
         }
 
         // Инициализация начального баланса
