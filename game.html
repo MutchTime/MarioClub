@@ -50,6 +50,10 @@
             font-size: 24px;
             color: white;
         }
+        
+        #characterButtons {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -73,7 +77,7 @@
     <!-- Меню выбора персонажа -->
     <div id="characterSelection" class="hidden">
         <h2>Выберите персонажа</h2>
-        <div id="characterButtons"></div>
+        <div id="characterButtons"></div> <!-- Здесь будут отображены купленные персонажи -->
         <button onclick="backToMenu()">Назад</button>
     </div>
 
@@ -91,6 +95,7 @@
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
         const characterSelection = document.getElementById("characterSelection");
+        const characterButtons = document.getElementById("characterButtons");
         const shop = document.getElementById("shop");
         const balanceDisplay = document.getElementById("balance");
         const nicknameInput = document.getElementById("nicknameInput");
@@ -134,6 +139,19 @@
         function goToCharacterSelection() {
             menu.classList.add("hidden");
             characterSelection.classList.remove("hidden");
+            displayPurchasedCharacters();
+        }
+
+        // Показать список купленных персонажей
+        function displayPurchasedCharacters() {
+            characterButtons.innerHTML = ""; // Очистить предыдущие элементы
+
+            purchasedCharacters.forEach(character => {
+                const button = document.createElement("button");
+                button.textContent = character;
+                button.onclick = () => alert(`Вы выбрали персонажа: ${character}`);
+                characterButtons.appendChild(button);
+            });
         }
 
         // Переход к магазину
@@ -144,7 +162,6 @@
 
         // Переход назад в главное меню
         function backToMenu() {
-            console.log("Возвращение в главное меню"); // Отладка
             characterSelection.classList.add("hidden");
             shop.classList.add("hidden");
             menu.classList.remove("hidden");
@@ -152,7 +169,6 @@
 
         // Покупка персонажа
         function buyCharacter(character, cost) {
-            console.log(`Попытка покупки персонажа ${character} за ${cost} руб.`); // Отладка
             if (purchasedCharacters.includes(character)) {
                 alert(`${character} уже куплен.`);
             } else if (balance >= cost) {
