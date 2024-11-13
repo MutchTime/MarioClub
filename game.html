@@ -47,6 +47,7 @@
             background-color: #222;
             width: 800px;
             height: 600px;
+            display: none;
         }
 
         #balance {
@@ -54,6 +55,14 @@
             top: 20px;
             right: 20px;
             font-size: 24px;
+            color: white;
+        }
+
+        #monsterCount {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            font-size: 20px;
             color: white;
         }
     </style>
@@ -68,6 +77,9 @@
 
     <!-- Отображение баланса -->
     <div id="balance" class="hidden">Баланс: 500 руб.</div>
+
+    <!-- Отображение количества монстров -->
+    <div id="monsterCount" class="hidden">Монстров: 0</div>
 
     <!-- Главное меню -->
     <div id="menu" class="hidden">
@@ -101,7 +113,7 @@
     </div>
 
     <!-- Игровой канвас -->
-    <canvas id="gameCanvas" class="hidden"></canvas>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
 
     <script>
         const nicknameScreen = document.getElementById("nicknameScreen");
@@ -113,6 +125,7 @@
         const shop = document.getElementById("shop");
         const gameCanvas = document.getElementById("gameCanvas");
         const balanceDisplay = document.getElementById("balance");
+        const monsterCountDisplay = document.getElementById("monsterCount");
         const nicknameInput = document.getElementById("nicknameInput");
         const ctx = gameCanvas.getContext("2d");
 
@@ -124,6 +137,8 @@
         let enemies = [];
         let bullets = [];
         let playerDamage = 0;
+        let monstersRemaining = 0;
+        let isGameRunning = false;
 
         const characterSettings = {
             "Салага": { damage: 50 },
@@ -229,13 +244,18 @@
             for (let i = 0; i < count; i++) {
                 enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
             }
+            monstersRemaining = count;
+            monsterCountDisplay.textContent = `Монстров: ${monstersRemaining}`;
+            monsterCountDisplay.classList.remove("hidden");
         }
 
         function selectMap(map) {
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden");
+            gameCanvas.style.display = "block";
             initEnemies(maps[map].enemiesCount);
-            startGame(map);
+            isGameRunning = true;
+            gameLoop();
         }
 
         function updateBullets() {
@@ -251,7 +271,11 @@
                     ) {
                         enemy.hp -= playerDamage;
                         bullets.splice(bulletIndex, 1);
-                        if (enemy.hp <= 0) enemies.splice(enemyIndex, 1);
+                        if (enemy.hp <= 0) {
+                            enemies.splice(enemyIndex, 1);
+                            monstersRemaining--;
+                            monsterCountDisplay.textContent = `Монстров: ${monstersRemaining}`;
+                        }
                     }
                 });
             });
@@ -262,10 +286,12 @@
         }
 
         function gameLoop() {
+            if (!isGameRunning) return;
+
             ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
             updateBullets();
             drawEntities();
-            if (enemies.length > 0) {
+            if (monstersRemaining > 0) {
                 requestAnimationFrame(gameLoop);
             } else {
                 endGame();
@@ -282,7 +308,9 @@
         }
 
         function endGame() {
-            gameCanvas.classList.add("hidden");
+            isGameRunning = false;
+            gameCanvas.style.display = "none";
+            monsterCountDisplay.classList.add("hidden");
             balance += maps[selectedMap].reward;
             updateBalance();
             saveGameData();
