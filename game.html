@@ -43,12 +43,6 @@
             color: white;
         }
 
-        #gameCanvas {
-            background-color: #222;
-            width: 800px;
-            height: 600px;
-        }
-
         #balance {
             position: absolute;
             top: 20px;
@@ -60,12 +54,6 @@
         #nicknameInput {
             font-size: 20px;
             padding: 10px;
-            margin-top: 20px;
-        }
-        
-        #characterInfo {
-            color: white;
-            font-size: 20px;
             margin-top: 20px;
         }
     </style>
@@ -88,69 +76,17 @@
         <button onclick="goToShop()">Магазин</button>
     </div>
 
-    <!-- Меню выбора персонажа -->
-    <div id="characterSelection" class="hidden">
-        <h2>Выберите персонажа</h2>
-        <div id="characterButtons"></div>
-        <div id="characterInfo"></div> <!-- Отображение характеристик персонажа -->
-        <button onclick="backToMenu()">Назад</button>
-    </div>
-
-    <!-- Магазин -->
-    <div id="shop" class="hidden">
-        <h2>Магазин</h2>
-        <p>Купите персонажа:</p>
-        <button onclick="buyCharacter('Салага', 0)">Салага - Бесплатно</button>
-        <button onclick="buyCharacter('Солдат', 1000)">Солдат - 1000 руб.</button>
-        <button onclick="buyCharacter('Маг', 2500)">Маг - 2500 руб.</button>
-        <button onclick="backToMenu()">Назад</button>
-    </div>
-
-    <!-- Меню выбора карты -->
-    <div id="mapSelection" class="hidden">
-        <h2>Выберите карту</h2>
-        <div id="mapButtons"></div>
-        <button onclick="backToCharacterSelection()">Назад</button>
-    </div>
-
-    <!-- Игровой канвас -->
-    <canvas id="gameCanvas" class="hidden"></canvas>
-
     <script>
-        // Получаем элементы из HTML
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
-        const characterSelection = document.getElementById("characterSelection");
-        const characterButtons = document.getElementById("characterButtons");
-        const characterInfo = document.getElementById("characterInfo");
-        const mapSelection = document.getElementById("mapSelection");
-        const mapButtons = document.getElementById("mapButtons");
-        const shop = document.getElementById("shop");
-        const gameCanvas = document.getElementById("gameCanvas");
         const balanceDisplay = document.getElementById("balance");
         const nicknameInput = document.getElementById("nicknameInput");
-        const ctx = gameCanvas.getContext("2d");
 
         let nickname = "";
         let balance = 500;
         let purchasedCharacters = ["Салага"];
         let unlockedMaps = ["Первая карта"];
 
-        // Персонажи и их характеристики
-        const characters = {
-            "Салага": { weapon: "Пистолет", hp: 50 },
-            "Солдат": { weapon: "Пистолет-пулемет", hp: 75 },
-            "Маг": { weapon: "Магическая палочка", hp: 100 }
-        };
-
-        // Карты и награды
-        const maps = {
-            "Первая карта": { reward: 100 },
-            "Вторая карта": { reward: 300 },
-            "Третья карта": { reward: 500 }
-        };
-
-        // Сохранение данных
         function saveGameData() {
             const gameData = {
                 balance,
@@ -160,13 +96,16 @@
             localStorage.setItem(nickname, JSON.stringify(gameData));
         }
 
-        // Загрузка данных
         function initializeGame() {
+            console.log("Кнопка 'Начать игру' нажата"); // Отладка: проверяем, нажата ли кнопка
+
             nickname = nicknameInput.value.trim();
             if (!nickname) {
                 alert("Пожалуйста, введите никнейм!");
                 return;
             }
+
+            console.log("Никнейм:", nickname); // Отладка: проверяем, захвачен ли никнейм
 
             const savedData = localStorage.getItem(nickname);
             if (savedData) {
@@ -183,90 +122,12 @@
             nicknameScreen.classList.add("hidden");
             menu.classList.remove("hidden");
             balanceDisplay.classList.remove("hidden");
+            console.log("Игра инициализирована"); // Отладка: проверяем, завершена ли инициализация
         }
 
-        // Обновление баланса на экране
         function updateBalance() {
             balanceDisplay.textContent = `Баланс: ${balance} руб.`;
         }
-
-        // Переход к выбору персонажа
-        function goToCharacterSelection() {
-            menu.classList.add("hidden");
-            characterSelection.classList.remove("hidden");
-            displayPurchasedCharacters();
-        }
-
-        // Отображение купленных персонажей и их характеристик
-        function displayPurchasedCharacters() {
-            characterButtons.innerHTML = "";
-            characterInfo.innerHTML = ""; // Очистка информации о персонаже
-
-            purchasedCharacters.forEach(character => {
-                const button = document.createElement("button");
-                button.textContent = character;
-                button.onclick = () => showCharacterInfo(character);
-                characterButtons.appendChild(button);
-            });
-        }
-
-        // Отображение информации о выбранном персонаже
-        function showCharacterInfo(character) {
-            const charData = characters[character];
-            characterInfo.innerHTML = `Персонаж: ${character} <br> Оружие: ${charData.weapon} <br> HP: ${charData.hp}`;
-        }
-
-        // Переход к магазину
-        function goToShop() {
-            menu.classList.add("hidden");
-            shop.classList.remove("hidden");
-        }
-
-        // Переход назад в главное меню
-        function backToMenu() {
-            characterSelection.classList.add("hidden");
-            shop.classList.add("hidden");
-            menu.classList.remove("hidden");
-        }
-
-        // Покупка персонажа
-        function buyCharacter(character, cost) {
-            if (purchasedCharacters.includes(character)) {
-                alert(`${character} уже куплен.`);
-            } else if (balance >= cost) {
-                balance -= cost;
-                purchasedCharacters.push(character);
-                updateBalance();
-                saveGameData();
-                alert(`${character} куплен!`);
-            } else {
-                alert("Недостаточно средств.");
-            }
-        }
-
-        // Выбор персонажа
-        function selectCharacter(character) {
-            if (purchasedCharacters.includes(character)) {
-                characterSelection.classList.add("hidden");
-                mapSelection.classList.remove("hidden");
-                displayAvailableMaps();
-            } else {
-                alert(`Персонаж ${character} не куплен. Купите его в магазине.`);
-            }
-        }
-
-        // Отображение доступных карт
-        function displayAvailableMaps() {
-            mapButtons.innerHTML = "";
-
-            Object.keys(maps).forEach(mapName => {
-                if (unlockedMaps.includes(mapName)) {
-                    const button = document.createElement("button");
-                    button.textContent = `${mapName}`;
-                    button.onclick = () => selectMap(mapName);
-                    mapButtons.appendChild(button);
-                }
-            });
-        }
-
-        // Переход назад к выбору персонажа
+    </script>
+</body>
+</html>
