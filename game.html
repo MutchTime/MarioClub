@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра с монстрами и оружием</title>
+    <title>Игра с монстрами и движением</title>
     <style>
         body, html {
             margin: 0;
@@ -289,6 +289,7 @@
             if (!isGameRunning) return;
 
             ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            movePlayer();
             updateBullets();
             drawEntities();
             if (monstersRemaining > 0) {
@@ -330,9 +331,26 @@
             characterSelection.classList.remove("hidden");
         }
 
-        window.addEventListener("click", shoot);
+        // Управление движением игрока
+        const player = { x: 400, y: 550, speed: 5 };
+        const keys = {};
 
-        const player = { x: 400, y: 550 };
+        window.addEventListener("keydown", (e) => {
+            keys[e.key] = true;
+        });
+
+        window.addEventListener("keyup", (e) => {
+            keys[e.key] = false;
+        });
+
+        function movePlayer() {
+            if (keys["ArrowUp"] && player.y > 0) player.y -= player.speed;
+            if (keys["ArrowDown"] && player.y < gameCanvas.height - 20) player.y += player.speed;
+            if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
+            if (keys["ArrowRight"] && player.x < gameCanvas.width - 20) player.x += player.speed;
+        }
+
+        window.addEventListener("click", shoot);
 
         function saveGameData() {
             const gameData = {
