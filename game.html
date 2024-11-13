@@ -1,3 +1,4 @@
+Егор Дзюба😇👾, [13.11.2024 19:29]
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,13 +122,8 @@
     <!-- Игровой канвас -->
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-    <!-- Музыка в игре -->
-    <audio id="backgroundMusic" loop>
-        <source src="background-music.mp3" type="audio/mpeg">
-        Ваш браузер не поддерживает элемент <code>audio</code>.
-    </audio>
-
-    <script>
+Егор Дзюба😇👾, [13.11.2024 19:29]
+<script>
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
         const characterSelection = document.getElementById("characterSelection");
@@ -140,7 +136,6 @@
         const monsterCountDisplay = document.getElementById("monsterCount");
         const playerHPDisplay = document.getElementById("playerHP");
         const nicknameInput = document.getElementById("nicknameInput");
-        const backgroundMusic = document.getElementById("backgroundMusic");
         const ctx = gameCanvas.getContext("2d");
 
         let nickname = "";
@@ -159,7 +154,7 @@
 
         const characterSettings = {
             "Салага": { damage: 50, hp: 50 },
-            "Солдат": { damage: 50, hp: 75 },
+            "Солдат": { damage: 75, hp: 75 },
             "Маг": { damage: 100, hp: 100 }
         };
 
@@ -182,36 +177,23 @@
                 balance = gameData.balance;
                 purchasedCharacters = gameData.purchasedCharacters;
                 unlockedMaps = gameData.unlockedMaps;
-                alert(`Добро пожаловать, ${nickname}! Данные загружены.`);
+                alert(Добро пожаловать, ${nickname}! Данные загружены.);
             } else {
-                alert(`Добро пожаловать, ${nickname}! Начнем новую игру.`);
+                alert(Добро пожаловать, ${nickname}! Начнем новую игру.);
             }
 
             updateBalance();
             nicknameScreen.classList.add("hidden");
             menu.classList.remove("hidden");
             balanceDisplay.classList.remove("hidden");
-            playBackgroundMusic();
-        }
-
-        function playBackgroundMusic() {
-            backgroundMusic.volume = 0.5;
-            backgroundMusic.play().catch((error) => {
-                console.error("Не удалось воспроизвести музыку:", error);
-            });
-        }
-
-        function stopBackgroundMusic() {
-            backgroundMusic.pause();
-            backgroundMusic.currentTime = 0;
         }
 
         function updateBalance() {
-            balanceDisplay.textContent = `Баланс: ${balance} руб.`;
+            balanceDisplay.textContent = Баланс: ${balance} руб.;
         }
 
         function updatePlayerHP() {
-            playerHPDisplay.textContent = `HP: ${playerHP}`;
+            playerHPDisplay.textContent = HP: ${playerHP};
         }
 
         function goToCharacterSelection() {
@@ -240,24 +222,25 @@
                 mapSelection.classList.remove("hidden");
                 displayAvailableMaps();
             } else {
-                alert(`Персонаж ${character} не куплен. Купите его в магазине.`);
+                alert(Персонаж ${character} не куплен. Купите его в магазине.);
             }
         }
 
-        function goToShop() {
+Егор Дзюба😇👾, [13.11.2024 19:29]
+function goToShop() {
             menu.classList.add("hidden");
             shop.classList.remove("hidden");
         }
 
         function buyCharacter(character, cost) {
             if (purchasedCharacters.includes(character)) {
-                alert(`${character} уже куплен.`);
+                alert(${character} уже куплен.);
             } else if (balance >= cost) {
                 balance -= cost;
                 purchasedCharacters.push(character);
                 updateBalance();
                 saveGameData();
-                alert(`${character} куплен!`);
+                alert(${character} куплен!);
             } else {
                 alert("Недостаточно средств.");
             }
@@ -281,7 +264,7 @@
                 enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
             }
             monstersRemaining = count;
-            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
+            monsterCountDisplay.textContent = Монстров: ${totalMonsters - monstersRemaining};
             monsterCountDisplay.classList.remove("hidden");
             playerHPDisplay.classList.remove("hidden");
         }
@@ -307,7 +290,8 @@
                 bullet.x += bullet.dx;
                 bullet.y += bullet.dy;
 
-                if (bullet.x < 0 || bullet.x > gameCanvas.width || bullet.y < 0 || bullet.y > gameCanvas.height) {
+Егор Дзюба😇👾, [13.11.2024 19:29]
+if (bullet.x < 0  bullet.x > gameCanvas.width  bullet.y < 0  bullet.y > gameCanvas.height) {
                     bullets.splice(bulletIndex, 1);
                     return;
                 }
@@ -375,7 +359,7 @@
             updateBullets();
             updateEnemies();
             drawEntities();
-            if (playerHP > 0 && (monstersRemaining > 0 || totalMonsters > 0)) {
+            if (playerHP > 0 && (monstersRemaining > 0  totalMonsters > 0)) {
                 requestAnimationFrame(gameLoop);
             } else {
                 endGame();
@@ -396,28 +380,16 @@
             gameCanvas.style.display = "none";
             monsterCountDisplay.classList.add("hidden");
             playerHPDisplay.classList.add("hidden");
-            stopBackgroundMusic();
             
             if (playerHP > 0) {
                 balance += maps[selectedMap].reward;
                 updateBalance();
                 saveGameData();
                 alert("Уровень завершен!");
-                unlockNextMap();
             } else {
                 alert("Игра окончена! Вы проиграли.");
             }
             goToCharacterSelection();
-        }
-
-        function unlockNextMap() {
-            if (selectedMap === "Первая карта" && !unlockedMaps.includes("Вторая карта")) {
-                unlockedMaps.push("Вторая карта");
-                alert("Вторая карта разблокирована!");
-            } else if (selectedMap === "Вторая карта" && !unlockedMaps.includes("Третья карта")) {
-                unlockedMaps.push("Третья карта");
-                alert("Третья карта разблокирована!");
-            }
         }
 
         function backToMenu() {
@@ -427,10 +399,39 @@
             menu.classList.remove("hidden");
         }
 
-        function backToCharacterSelection() {
+Егор Дзюба😇👾, [13.11.2024 19:29]
+function backToCharacterSelection() {
             mapSelection.classList.add("hidden");
             characterSelection.classList.remove("hidden");
         }
+        function endGame() {
+    isGameRunning = false;
+    gameCanvas.style.display = "none";
+    monsterCountDisplay.classList.add("hidden");
+    playerHPDisplay.classList.add("hidden");
+    
+    if (playerHP > 0) {
+        balance += maps[selectedMap].reward;
+        updateBalance();
+
+        // Разблокируем следующую карту
+        if (selectedMap === "Первая карта" && !unlockedMaps.includes("Вторая карта")) {
+            unlockedMaps.push("Вторая карта");
+            alert("Вторая карта разблокирована!");
+        } else if (selectedMap === "Вторая карта" && !unlockedMaps.includes("Третья карта")) {
+            unlockedMaps.push("Третья карта");
+            alert("Третья карта разблокирована!");
+        }
+
+        saveGameData();
+        alert("Уровень завершен!");
+    } else {
+        alert("Игра окончена! Вы проиграли.");
+    }
+
+    goToCharacterSelection();
+}
+
 
         const player = { x: 400, y: 550, speed: 5 };
         const keys = {};
