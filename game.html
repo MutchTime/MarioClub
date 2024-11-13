@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра с монстрами и направленной стрельбой</title>
+    <title>Игра с монстрами и HP</title>
     <style>
         body, html {
             margin: 0;
@@ -58,12 +58,17 @@
             color: white;
         }
 
-        #monsterCount {
+        #monsterCount, #playerHP {
             position: absolute;
             top: 60px;
             right: 20px;
             font-size: 20px;
             color: white;
+        }
+
+        #playerHP {
+            top: 20px;
+            left: 20px;
         }
     </style>
 </head>
@@ -75,8 +80,9 @@
         <button onclick="initializeGame()">Начать игру</button>
     </div>
 
-    <!-- Отображение баланса -->
+    <!-- Отображение баланса и здоровья игрока -->
     <div id="balance" class="hidden">Баланс: 500 руб.</div>
+    <div id="playerHP" class="hidden">HP: 0</div>
 
     <!-- Отображение количества монстров -->
     <div id="monsterCount" class="hidden">Монстров: 0</div>
@@ -126,30 +132,33 @@
         const gameCanvas = document.getElementById("gameCanvas");
         const balanceDisplay = document.getElementById("balance");
         const monsterCountDisplay = document.getElementById("monsterCount");
+        const playerHPDisplay = document.getElementById("playerHP");
         const nicknameInput = document.getElementById("nicknameInput");
         const ctx = gameCanvas.getContext("2d");
 
         let nickname = "";
         let balance = 500;
         let selectedCharacter = "";
+        let playerHP = 0;
         let purchasedCharacters = ["Салага"];
         let unlockedMaps = ["Первая карта"];
         let enemies = [];
         let bullets = [];
         let playerDamage = 0;
         let monstersRemaining = 0;
+        let totalMonsters = 0;
         let isGameRunning = false;
 
         const characterSettings = {
-            "Салага": { damage: 50 },
-            "Солдат": { damage: 50 },
-            "Маг": { damage: 100 }
+            "Салага": { damage: 50, hp: 50 },
+            "Солдат": { damage: 50, hp: 75 },
+            "Маг": { damage: 100, hp: 100 }
         };
 
         const maps = {
-            "Первая карта": { reward: 100, enemiesCount: 100 },
-            "Вторая карта": { reward: 300, enemiesCount: 200 },
-            "Третья карта": { reward: 500, enemiesCount: 300 }
+            "Первая карта": { reward: 100, totalEnemies: 45 },
+            "Вторая карта": { reward: 300, totalEnemies: 90 },
+            "Третья карта": { reward: 500, totalEnemies: 135 }
         };
 
         function initializeGame() {
@@ -180,6 +189,10 @@
             balanceDisplay.textContent = `Баланс: ${balance} руб.`;
         }
 
+        function updatePlayerHP() {
+            playerHPDisplay.textContent = `HP: ${playerHP}`;
+        }
+
         function goToCharacterSelection() {
             menu.classList.add("hidden");
             characterSelection.classList.remove("hidden");
@@ -200,6 +213,8 @@
             if (purchasedCharacters.includes(character)) {
                 selectedCharacter = character;
                 playerDamage = characterSettings[character].damage;
+                playerHP = characterSettings[character].hp;
+                updatePlayerHP();
                 characterSelection.classList.add("hidden");
                 mapSelection.classList.remove("hidden");
                 displayAvailableMaps();
@@ -245,25 +260,33 @@
                 enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
             }
             monstersRemaining = count;
-            monsterCountDisplay.textContent = `Монстров: ${monstersRemaining}`;
+            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
             monsterCountDisplay.classList.remove("hidden");
+            playerHPDisplay.classList.remove("hidden");
         }
 
         function selectMap(map) {
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden");
             gameCanvas.style.display = "block";
-            initEnemies(maps[map].enemiesCount);
+            totalMonsters = maps[map].totalEnemies;
+            initEnemies(15); // Спавн начальных 15 монстров
             isGameRunning = true;
             gameLoop();
         }
 
         function updateBullets() {
             bullets.forEach((bullet, bulletIndex) => {
+                // Направление пули
+                const angle = Math.atan2(targetY - bullet.y, targetX - bullet.x);
+                const speed = 5;
+                bullet.dx = Math.cos(angle) * speed;
+                bullet.dy = Math.sin(angle) * speed;
+
                 bullet.x += bullet.dx;
                 bullet.y += bullet.dy;
 
-                // Удаляем пулю, если она выходит за пределы экрана
+                // Удаление пули, если она выходит за пределы
                 if (bullet.x < 0 || bullet.x > gameCanvas.width || bullet.y < 0 || bullet.y > gameCanvas.height) {
                     bullets.splice(bulletIndex, 1);
                     return;
@@ -282,26 +305,47 @@
                         if (enemy.hp <= 0) {
                             enemies.splice(enemyIndex, 1);
                             monstersRemaining--;
-                            monsterCountDisplay.textContent = `Монстров: ${monstersRemaining}`;
+                            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
+
+                            if (monstersRemaining === 0 && totalMonsters > 0) {
+                                const remainingMonsters = Math.min(15, totalMonsters - monstersRemaining);
+                                initEnemies(remainingMonsters);
+                                totalMonsters -= remainingMonsters;
+                            }
                         }
                     }
                 });
             });
         }
 
-        function shoot(e) {
-            const rect = gameCanvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
+        function updateEnemies() {
+            enemies.forEach((enemy) => {
+                const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+                enemy.x += Math.cos(angle);
+                enemy.y += Math.sin(angle);
 
-            // Вычисляем угол между игроком и курсором
-            const angle = Math.atan2(mouseY - player.y, mouseX - player.x);
-            const speed = 10;
+                // Проверка на столкновение игрока с монстром
+                if (
+                    player.x < enemy.x + 20 &&
+                    player.x + 20 > enemy.x &&
+                    player.y < enemy.y + 20 &&
+                    player.y + 20 > enemy.y
+                ) {
+                    playerHP -= 5;
+                    updatePlayerHP();
+                    if (playerHP <= 0) {
+                        endGame();
+                    }
+                }
+            });
+        }
+
+        function shoot() {
             bullets.push({
                 x: player.x + 10,
                 y: player.y,
-                dx: Math.cos(angle) * speed,
-                dy: Math.sin(angle) * speed
+                dx: 0,
+                dy: 0
             });
         }
 
@@ -311,8 +355,9 @@
             ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
             movePlayer();
             updateBullets();
+            updateEnemies();
             drawEntities();
-            if (monstersRemaining > 0) {
+            if (playerHP > 0 && (monstersRemaining > 0 || totalMonsters > 0)) {
                 requestAnimationFrame(gameLoop);
             } else {
                 endGame();
@@ -332,10 +377,15 @@
             isGameRunning = false;
             gameCanvas.style.display = "none";
             monsterCountDisplay.classList.add("hidden");
-            balance += maps[selectedMap].reward;
-            updateBalance();
-            saveGameData();
-            alert(`Уровень завершен!`);
+            playerHPDisplay.classList.add("hidden");
+            if (playerHP > 0) {
+                balance += maps[selectedMap].reward;
+                updateBalance();
+                saveGameData();
+                alert("Уровень завершен!");
+            } else {
+                alert("Игра окончена! Вы проиграли.");
+            }
             goToCharacterSelection();
         }
 
@@ -351,9 +401,10 @@
             characterSelection.classList.remove("hidden");
         }
 
-        // Управление движением игрока
         const player = { x: 400, y: 550, speed: 5 };
         const keys = {};
+        let targetX = player.x;
+        let targetY = player.y;
 
         window.addEventListener("keydown", (e) => {
             keys[e.key] = true;
@@ -370,7 +421,12 @@
             if (keys["ArrowRight"] && player.x < gameCanvas.width - 20) player.x += player.speed;
         }
 
-        // Событие стрельбы по нажатию мыши
+        gameCanvas.addEventListener("mousemove", (e) => {
+            const rect = gameCanvas.getBoundingClientRect();
+            targetX = e.clientX - rect.left;
+            targetY = e.clientY - rect.top;
+        });
+
         gameCanvas.addEventListener("click", shoot);
 
         function saveGameData() {
