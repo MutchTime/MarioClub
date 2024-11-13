@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра с характеристиками персонажей</title>
+    <title>Игра с сохранением данных</title>
     <style>
         body, html {
             margin: 0;
@@ -43,6 +43,12 @@
             color: white;
         }
 
+        #gameCanvas {
+            background-color: #222;
+            width: 800px;
+            height: 600px;
+        }
+
         #balance {
             position: absolute;
             top: 20px;
@@ -50,13 +56,11 @@
             font-size: 24px;
             color: white;
         }
-        
-        #characterButtons, #mapButtons {
-            margin-top: 20px;
-        }
 
-        .character-info {
-            margin-bottom: 20px;
+        #nicknameInput {
+            font-size: 20px;
+            padding: 10px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -81,7 +85,7 @@
     <!-- Меню выбора персонажа -->
     <div id="characterSelection" class="hidden">
         <h2>Выберите персонажа</h2>
-        <div id="characterButtons"></div> <!-- Здесь будут отображены купленные персонажи -->
+        <div id="characterButtons"></div>
         <button onclick="backToMenu()">Назад</button>
     </div>
 
@@ -89,18 +93,24 @@
     <div id="shop" class="hidden">
         <h2>Магазин</h2>
         <p>Купите персонажа:</p>
-        <div id="shopCharacters"></div> <!-- Здесь будут отображены персонажи с характеристиками для покупки -->
+        <button onclick="buyCharacter('Салага', 0)">Салага - Бесплатно</button>
+        <button onclick="buyCharacter('Солдат', 1000)">Солдат - 1000 руб.</button>
+        <button onclick="buyCharacter('Маг', 2500)">Маг - 2500 руб.</button>
         <button onclick="backToMenu()">Назад</button>
     </div>
 
     <!-- Меню выбора карты -->
     <div id="mapSelection" class="hidden">
-        <h2>Выберите уровень</h2>
-        <div id="mapButtons"></div> <!-- Здесь будут отображены карты уровней -->
+        <h2>Выберите карту</h2>
+        <div id="mapButtons"></div>
         <button onclick="backToCharacterSelection()">Назад</button>
     </div>
 
+    <!-- Игровой канвас -->
+    <canvas id="gameCanvas" class="hidden"></canvas>
+
     <script>
+        // Получаем элементы из HTML
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
         const characterSelection = document.getElementById("characterSelection");
@@ -108,23 +118,34 @@
         const mapSelection = document.getElementById("mapSelection");
         const mapButtons = document.getElementById("mapButtons");
         const shop = document.getElementById("shop");
-        const shopCharacters = document.getElementById("shopCharacters");
+        const gameCanvas = document.getElementById("gameCanvas");
         const balanceDisplay = document.getElementById("balance");
         const nicknameInput = document.getElementById("nicknameInput");
+        const ctx = gameCanvas.getContext("2d");
 
         let nickname = "";
         let balance = 500;
         let purchasedCharacters = ["Салага"];
-        let unlockedMaps = [1];  // По умолчанию разблокирован первый уровень
+        let unlockedMaps = ["Первая карта"];
 
-        // Персонажи с характеристиками
-        const characters = {
-            "Салага": { weapon: "Пистолет", hp: 50, cost: 0 },
-            "Солдат": { weapon: "Пистолет-пулемет", hp: 75, cost: 1000 },
-            "Маг": { weapon: "Магическая палочка", hp: 100, cost: 2500 }
+        // Карты и награды
+        const maps = {
+            "Первая карта": { reward: 100 },
+            "Вторая карта": { reward: 300 },
+            "Третья карта": { reward: 500 }
         };
 
-        // Инициализация игры
+        // Сохранение данных
+        function saveGameData() {
+            const gameData = {
+                balance,
+                purchasedCharacters,
+                unlockedMaps
+            };
+            localStorage.setItem(nickname, JSON.stringify(gameData));
+        }
+
+        // Загрузка данных
         function initializeGame() {
             nickname = nicknameInput.value.trim();
             if (!nickname) {
@@ -149,7 +170,7 @@
             balanceDisplay.classList.remove("hidden");
         }
 
-        // Обновление баланса
+        // Обновление баланса на экране
         function updateBalance() {
             balanceDisplay.textContent = `Баланс: ${balance} руб.`;
         }
@@ -161,9 +182,9 @@
             displayPurchasedCharacters();
         }
 
-        // Показать список купленных персонажей
+        // Отображение купленных персонажей
         function displayPurchasedCharacters() {
-            characterButtons.innerHTML = ""; // Очистить предыдущие элементы
+            characterButtons.innerHTML = ""; // Очистка предыдущих кнопок
 
             purchasedCharacters.forEach(character => {
                 const button = document.createElement("button");
@@ -173,78 +194,17 @@
             });
         }
 
-        // Переход к выбору карты (уровня)
-        function selectCharacter(character) {
-            console.log(`Выбран персонаж: ${character}`);
-            characterSelection.classList.add("hidden");
-            mapSelection.classList.remove("hidden");
-            displayAvailableMaps();
-        }
-
-        // Показать список доступных уровней (карт)
-        function displayAvailableMaps() {
-            mapButtons.innerHTML = ""; // Очистить предыдущие кнопки уровней
-
-            for (let level = 1; level <= 5; level++) {
-                const button = document.createElement("button");
-                button.textContent = `Уровень ${level}`;
-                button.disabled = !unlockedMaps.includes(level);  // Заблокировать, если уровень не разблокирован
-                button.onclick = () => selectMap(level);
-                mapButtons.appendChild(button);
-            }
-        }
-
-        // Выбор уровня
-        function selectMap(level) {
-            alert(`Вы выбрали уровень ${level}`);
-            if (!unlockedMaps.includes(level + 1) && level < 5) {
-                unlockedMaps.push(level + 1); // Разблокировать следующий уровень
-            }
-            saveGameData();
-            displayAvailableMaps(); // Обновить доступные карты после завершения уровня
-        }
-
         // Переход к магазину
         function goToShop() {
             menu.classList.add("hidden");
             shop.classList.remove("hidden");
-            displayShopCharacters();
-        }
-
-        // Показать список персонажей с характеристиками в магазине
-        function displayShopCharacters() {
-            shopCharacters.innerHTML = ""; // Очистить предыдущие элементы
-
-            for (const character in characters) {
-                const charData = characters[character];
-                const charDiv = document.createElement("div");
-                charDiv.classList.add("character-info");
-
-                const button = document.createElement("button");
-                button.textContent = `${character} - ${charData.cost === 0 ? "Бесплатно" : `${charData.cost} руб.`}`;
-                button.onclick = () => buyCharacter(character, charData.cost);
-                
-                const charInfo = document.createElement("p");
-                charInfo.innerHTML = `Оружие: ${charData.weapon}<br>HP: ${charData.hp}`;
-
-                charDiv.appendChild(button);
-                charDiv.appendChild(charInfo);
-                shopCharacters.appendChild(charDiv);
-            }
         }
 
         // Переход назад в главное меню
         function backToMenu() {
             characterSelection.classList.add("hidden");
-            mapSelection.classList.add("hidden");
             shop.classList.add("hidden");
             menu.classList.remove("hidden");
-        }
-
-        // Переход назад к выбору персонажа
-        function backToCharacterSelection() {
-            mapSelection.classList.add("hidden");
-            characterSelection.classList.remove("hidden");
         }
 
         // Покупка персонажа
@@ -258,8 +218,79 @@
                 saveGameData();
                 alert(`${character} куплен!`);
             } else {
-                alert("Недостаточно средств.`);
+                alert("Недостаточно средств.");
             }
         }
 
-        // Сохранение данных
+        // Выбор персонажа
+        function selectCharacter(character) {
+            if (purchasedCharacters.includes(character)) {
+                characterSelection.classList.add("hidden");
+                mapSelection.classList.remove("hidden");
+                displayAvailableMaps();
+            } else {
+                alert(`Персонаж ${character} не куплен. Купите его в магазине.`);
+            }
+        }
+
+        // Отображение доступных карт
+        function displayAvailableMaps() {
+            mapButtons.innerHTML = ""; // Очистка предыдущих кнопок
+
+            Object.keys(maps).forEach(mapName => {
+                if (unlockedMaps.includes(mapName)) {
+                    const button = document.createElement("button");
+                    button.textContent = `${mapName}`;
+                    button.onclick = () => selectMap(mapName);
+                    mapButtons.appendChild(button);
+                }
+            });
+        }
+
+        // Переход назад к выбору персонажа
+        function backToCharacterSelection() {
+            mapSelection.classList.add("hidden");
+            characterSelection.classList.remove("hidden");
+        }
+
+        // Выбор карты
+        function selectMap(map) {
+            mapSelection.classList.add("hidden");
+            gameCanvas.classList.remove("hidden");
+            startGame(map);
+        }
+
+        // Завершение карты и начисление награды
+        function completeMap(map) {
+            const reward = maps[map].reward;
+            alert(`Карта "${map}" пройдена! Вы получили ${reward} руб.`);
+
+            balance += reward;
+            if (!unlockedMaps.includes("Вторая карта") && map === "Первая карта") {
+                unlockedMaps.push("Вторая карта");
+            } else if (!unlockedMaps.includes("Третья карта") && map === "Вторая карта") {
+                unlockedMaps.push("Третья карта");
+            }
+
+            updateBalance();
+            saveGameData();
+            goToCharacterSelection();
+        }
+
+        // Запуск игры
+        function startGame(map) {
+            initGame();
+            setTimeout(() => completeMap(map), 5000);
+        }
+
+        // Инициализация игры
+        function initGame() {
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            console.log("Игра началась");
+        }
+
+        // Инициализация начального баланса
+        updateBalance();
+    </script>
+</body>
+</html>
