@@ -119,9 +119,9 @@
 
         // Карты и уровни сложности
         const maps = {
-            "Начальная": { levels: ["Начальный", "Продвинутый"], unlocked: true },
-            "Продвинутая": { levels: ["Начальный", "Продвинутый"], unlocked: false },
-            "Магическая": { levels: ["Начальный", "Продвинутый"], unlocked: false }
+            "Начальная": { levels: ["Начальный", "Продвинутый"], unlocked: true, reward: 200 },
+            "Продвинутая": { levels: ["Начальный", "Продвинутый"], unlocked: false, reward: 400 },
+            "Магическая": { levels: ["Начальный", "Продвинутый"], unlocked: false, reward: 0 }
         };
 
         // Обновление баланса на экране
@@ -218,7 +218,7 @@
             startGame();
         }
 
-        // Завершение уровня и разблокировка следующей карты
+        // Завершение уровня и начисление награды
         function completeLevel() {
             const currentMap = maps[selectedMap];
             const levelIndex = currentMap.levels.indexOf(currentLevel);
@@ -228,6 +228,11 @@
                 alert(`Переход на уровень "${currentLevel}" на карте ${selectedMap}`);
             } else {
                 alert(`Карта ${selectedMap} пройдена!`);
+                if (currentMap.reward > 0) {
+                    balance += currentMap.reward;
+                    updateBalance();
+                    alert(`Вы получили ${currentMap.reward} руб. за прохождение карты ${selectedMap}!`);
+                }
                 unlockNextMap();
                 goToCharacterSelection(); // Возвращаемся к выбору персонажа после завершения карты
             }
