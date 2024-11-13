@@ -227,3 +227,227 @@
 
         function goToShop() {
             menu.classList.add("hidden");
+            shop.classList.remove("hidden");
+        }
+
+        function buyCharacter(character, cost) {
+            if (purchasedCharacters.includes(character)) {
+                alert(`${character} уже куплен.`);
+            } else if (balance >= cost) {
+                balance -= cost;
+                purchasedCharacters.push(character);
+                updateBalance();
+                saveGameData();
+                alert(`${character} куплен!`);
+            } else {
+                alert("Недостаточно средств.");
+            }
+        }
+
+        function displayAvailableMaps() {
+            mapButtons.innerHTML = ""; 
+            Object.keys(maps).forEach(mapName => {
+                if (unlockedMaps.includes(mapName)) {
+                    const button = document.createElement("button");
+                    button.textContent = mapName;
+                    button.onclick = () => selectMap(mapName);
+                    mapButtons.appendChild(button);
+                }
+            });
+        }
+
+        function initEnemies(count) {
+            enemies = [];
+            for (let i = 0; i < count; i++) {
+                enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
+            }
+            monstersRemaining = count;
+            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
+            monsterCountDisplay.classList.remove("hidden");
+            playerHPDisplay.classList.remove("hidden");
+        }
+
+        function selectMap(map) {
+            selectedMap = map; // Track the current map
+            mapSelection.classList.add("hidden");
+            gameCanvas.classList.remove("hidden");
+            gameCanvas.style.display = "block";
+            totalMonsters = maps[map].totalEnemies;
+            initEnemies(15); // Спавн начальных 15 монстров
+            isGameRunning = true;
+            gameLoop();
+        }
+
+        function updateBullets() {
+            bullets.forEach((bullet, bulletIndex) => {
+                const angle = Math.atan2(targetY - bullet.y, targetX - bullet.x);
+                const speed = 5;
+                bullet.dx = Math.cos(angle) * speed;
+                bullet.dy = Math.sin(angle) * speed;
+
+                bullet.x += bullet.dx;
+                bullet.y += bullet.dy;
+
+                if (bullet.x < 0 || bullet.x > gameCanvas.width || bullet.y < 0 || bullet.y > gameCanvas.height) {
+                    bullets.splice(bulletIndex, 1);
+                    return;
+                }
+
+                enemies.forEach((enemy, enemyIndex) => {
+                    if (
+                        bullet.x < enemy.x + 20 &&
+                        bullet.x + 5 > enemy.x &&
+                        bullet.y < enemy.y + 20 &&
+                        bullet.y + 5 > enemy.y
+                    ) {
+                        enemy.hp -= playerDamage;
+                        bullets.splice(bulletIndex, 1);
+                        if (enemy.hp <= 0) {
+                            enemies.splice(enemyIndex, 1);
+                            monstersRemaining--;
+                            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
+
+                            if (monstersRemaining === 0 && totalMonsters > 0) {
+                                const remainingMonsters = Math.min(15, totalMonsters - monstersRemaining);
+                                initEnemies(remainingMonsters);
+                                totalMonsters -= remainingMonsters;
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        function updateEnemies() {
+            enemies.forEach((enemy) => {
+                const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+                enemy.x += Math.cos(angle);
+                enemy.y += Math.sin(angle);
+
+                if (
+                    player.x < enemy.x + 20 &&
+                    player.x + 20 > enemy.x &&
+                    player.y < enemy.y + 20 &&
+                    player.y + 20 > enemy.y
+                ) {
+                    playerHP -= 5;
+                    updatePlayerHP();
+                    if (playerHP <= 0) {
+                        endGame();
+                    }
+                }
+            });
+        }
+
+        function shoot() {
+            bullets.push({
+                x: player.x + 10,
+                y: player.y,
+                dx: 0,
+                dy: 0
+            });
+        }
+
+        function gameLoop() {
+            if (!isGameRunning) return;
+
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            movePlayer();
+            updateBullets();
+            updateEnemies();
+            drawEntities();
+            if (playerHP > 0 && (monstersRemaining > 0 || totalMonsters > 0)) {
+                requestAnimationFrame(gameLoop);
+            } else {
+                endGame();
+            }
+        }
+
+        function drawEntities() {
+            ctx.fillStyle = "blue";
+            ctx.fillRect(player.x, player.y, 20, 20);
+            ctx.fillStyle = "yellow";
+            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
+            ctx.fillStyle = "red";
+            enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
+        }
+
+        function endGame() {
+            isGameRunning = false;
+            gameCanvas.style.display = "none";
+            monsterCountDisplay.classList.add("hidden");
+            playerHPDisplay.classList.add("hidden");
+            
+            if (playerHP > 0) {
+                balance += maps[selectedMap].reward;
+                updateBalance();
+                saveGameData();
+                alert("Уровень завершен!");
+                unlockNextMap();
+            } else {
+                alert("Игра окончена! Вы проиграли.");
+            }
+            goToCharacterSelection();
+        }
+
+        function unlockNextMap() {
+            if (selectedMap === "Первая карта" && !unlockedMaps.includes("Вторая карта")) {
+                unlockedMaps.push("Вторая карта");
+                alert("Вторая карта разблокирована!");
+            } else if (selectedMap === "Вторая карта" && !unlockedMaps.includes("Третья карта")) {
+                unlockedMaps.push("Третья карта");
+                alert("Третья карта разблокирована!");
+            }
+        }
+
+        function backToMenu() {
+            characterSelection.classList.add("hidden");
+            mapSelection.classList.add("hidden");
+            shop.classList.add("hidden");
+            menu.classList.remove("hidden");
+        }
+
+        function backToCharacterSelection() {
+            mapSelection.classList.add("hidden");
+            characterSelection.classList.remove("hidden");
+        }
+
+        const player = { x: 400, y: 550, speed: 5 };
+        const keys = {};
+        let targetX = player.x;
+        let targetY = player.y;
+
+        window.addEventListener("keydown", (e) => {
+            keys[e.key] = true;
+        });
+
+        window.addEventListener("keyup", (e) => {
+            keys[e.key] = false;
+        });
+
+        function movePlayer() {
+            if (keys["ArrowUp"] && player.y > 0) player.y -= player.speed;
+            if (keys["ArrowDown"] && player.y < gameCanvas.height - 20) player.y += player.speed;
+            if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
+            if (keys["ArrowRight"] && player.x < gameCanvas.width - 20) player.x += player.speed;
+        }
+
+        gameCanvas.addEventListener("mousemove", (e) => {
+            const rect = gameCanvas.getBoundingClientRect();
+            targetX = e.clientX - rect.left;
+            targetY = e.clientY - rect.top;
+        });
+
+        gameCanvas.addEventListener("click", shoot);
+
+        function saveGameData() {
+            const gameData = {
+                balance,
+                purchasedCharacters,
+                unlockedMaps
+            };
+            localStorage.setItem(nickname, JSON.stringify(gameData));
+        }
+    </script>
+</body>
+</html>
