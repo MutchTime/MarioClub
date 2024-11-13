@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,8 +121,7 @@
     <!-- Игровой канвас -->
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-
-<script>
+    <script>
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
         const characterSelection = document.getElementById("characterSelection");
@@ -154,7 +152,7 @@
 
         const characterSettings = {
             "Салага": { damage: 50, hp: 50 },
-            "Солдат": { damage: 75, hp: 75 },
+            "Солдат": { damage: 50, hp: 75 },
             "Маг": { damage: 100, hp: 100 }
         };
 
@@ -226,8 +224,7 @@
             }
         }
 
-
-function goToShop() {
+        function goToShop() {
             menu.classList.add("hidden");
             shop.classList.remove("hidden");
         }
@@ -290,8 +287,7 @@ function goToShop() {
                 bullet.x += bullet.dx;
                 bullet.y += bullet.dy;
 
-
-if (bullet.x < 0  bullet.x > gameCanvas.width  bullet.y < 0  bullet.y > gameCanvas.height) {
+                if (bullet.x < 0 || bullet.x > gameCanvas.width || bullet.y < 0 || bullet.y > gameCanvas.height) {
                     bullets.splice(bulletIndex, 1);
                     return;
                 }
@@ -308,7 +304,7 @@ if (bullet.x < 0  bullet.x > gameCanvas.width  bullet.y < 0  bullet.y > gameCanv
                         if (enemy.hp <= 0) {
                             enemies.splice(enemyIndex, 1);
                             monstersRemaining--;
-                            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
+                            monsterCountDisplay.textContent = Монстров: ${totalMonsters - monstersRemaining};
 
                             if (monstersRemaining === 0 && totalMonsters > 0) {
                                 const remainingMonsters = Math.min(15, totalMonsters - monstersRemaining);
@@ -359,7 +355,7 @@ if (bullet.x < 0  bullet.x > gameCanvas.width  bullet.y < 0  bullet.y > gameCanv
             updateBullets();
             updateEnemies();
             drawEntities();
-            if (playerHP > 0 && (monstersRemaining > 0  totalMonsters > 0)) {
+            if (playerHP > 0 && (monstersRemaining > 0 || totalMonsters > 0)) {
                 requestAnimationFrame(gameLoop);
             } else {
                 endGame();
@@ -399,39 +395,10 @@ if (bullet.x < 0  bullet.x > gameCanvas.width  bullet.y < 0  bullet.y > gameCanv
             menu.classList.remove("hidden");
         }
 
-
-function backToCharacterSelection() {
+        function backToCharacterSelection() {
             mapSelection.classList.add("hidden");
             characterSelection.classList.remove("hidden");
         }
-        function endGame() {
-    isGameRunning = false;
-    gameCanvas.style.display = "none";
-    monsterCountDisplay.classList.add("hidden");
-    playerHPDisplay.classList.add("hidden");
-    
-    if (playerHP > 0) {
-        balance += maps[selectedMap].reward;
-        updateBalance();
-
-        // Разблокируем следующую карту
-        if (selectedMap === "Первая карта" && !unlockedMaps.includes("Вторая карта")) {
-            unlockedMaps.push("Вторая карта");
-            alert("Вторая карта разблокирована!");
-        } else if (selectedMap === "Вторая карта" && !unlockedMaps.includes("Третья карта")) {
-            unlockedMaps.push("Третья карта");
-            alert("Третья карта разблокирована!");
-        }
-
-        saveGameData();
-        alert("Уровень завершен!");
-    } else {
-        alert("Игра окончена! Вы проиграли.");
-    }
-
-    goToCharacterSelection();
-}
-
 
         const player = { x: 400, y: 550, speed: 5 };
         const keys = {};
