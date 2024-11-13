@@ -4,192 +4,177 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soul Knight Clone</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body, html {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #1d1d1d;
+        }
+
+        canvas {
+            background-color: #333;
+        }
+    </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    <script src="game.js"></script>
-</body>
-</html>
-body, html {
-    margin: 0;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #1d1d1d;
-}
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
 
-canvas {
-    background-color: #333;
-}
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+        // Настройки канваса
+        canvas.width = 800;
+        canvas.height = 600;
 
-// Настройки канваса
-canvas.width = 800;
-canvas.height = 600;
-
-// Игрок
-const player = {
-    x: canvas.width / 2,
-    y: canvas.height / 2,
-    width: 30,
-    height: 30,
-    color: "blue",
-    speed: 3
-};
-
-// Движение игрока
-let keys = {};
-window.addEventListener("keydown", (e) => keys[e.key] = true);
-window.addEventListener("keyup", (e) => keys[e.key] = false);
-
-function movePlayer() {
-    if (keys["ArrowUp"] && player.y > 0) player.y -= player.speed;
-    if (keys["ArrowDown"] && player.y < canvas.height - player.height) player.y += player.speed;
-    if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
-    if (keys["ArrowRight"] && player.x < canvas.width - player.width) player.x += player.speed;
-}
-
-// Отрисовка игрока
-function drawPlayer() {
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-}
-// Комнаты и враги
-const rooms = [];
-const roomSize = 200;
-
-function generateRooms() {
-    const roomCount = 5; // количество комнат в подземелье
-    for (let i = 0; i < roomCount; i++) {
-        const room = {
-            x: Math.random() * (canvas.width - roomSize),
-            y: Math.random() * (canvas.height - roomSize),
-            width: roomSize,
-            height: roomSize
+        // Игрок
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            width: 30,
+            height: 30,
+            color: "blue",
+            speed: 3
         };
-        rooms.push(room);
-    }
-}
 
-function drawRooms() {
-    rooms.forEach(room => {
-        ctx.fillStyle = "#444";
-        ctx.fillRect(room.x, room.y, room.width, room.height);
-    });
-}
+        // Движение игрока
+        let keys = {};
+        window.addEventListener("keydown", (e) => keys[e.key] = true);
+        window.addEventListener("keyup", (e) => keys[e.key] = false);
 
-// Генерация врагов
-const enemies = [];
-
-function generateEnemies() {
-    rooms.forEach(room => {
-        const enemy = {
-            x: room.x + Math.random() * room.width,
-            y: room.y + Math.random() * room.height,
-            width: 20,
-            height: 20,
-            color: "red",
-            speed: 1
-        };
-        enemies.push(enemy);
-    });
-}
-
-function drawEnemies() {
-    enemies.forEach(enemy => {
-        ctx.fillStyle = enemy.color;
-        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-    });
-}
-function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    drawRooms();
-    movePlayer();
-    drawPlayer();
-    drawEnemies();
-
-    requestAnimationFrame(gameLoop);
-}
-
-// Генерация объектов и запуск игры
-generateRooms();
-generateEnemies();
-gameLoop();
-function checkCollisions() {
-    enemies.forEach((enemy, index) => {
-        if (player.x < enemy.x + enemy.width &&
-            player.x + player.width > enemy.x &&
-            player.y < enemy.y + enemy.height &&
-            player.y + player.height > enemy.y) {
-            // Здесь можно уменьшить здоровье игрока или уничтожить врага
-            enemies.splice(index, 1); // убираем врага при столкновении
+        function movePlayer() {
+            if (keys["ArrowUp"] && player.y > 0) player.y -= player.speed;
+            if (keys["ArrowDown"] && player.y < canvas.height - player.height) player.y += player.speed;
+            if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
+            if (keys["ArrowRight"] && player.x < canvas.width - player.width) player.x += player.speed;
         }
-    });
-}
 
-function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Отрисовка игрока
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
 
-    drawRooms();
-    movePlayer();
-    drawPlayer();
-    drawEnemies();
-    checkCollisions();
+        // Комнаты и враги
+        const rooms = [];
+        const roomSize = 200;
 
-    requestAnimationFrame(gameLoop);
-}
-const bullets = [];
+        function generateRooms() {
+            const roomCount = 5; // количество комнат в подземелье
+            for (let i = 0; i < roomCount; i++) {
+                const room = {
+                    x: Math.random() * (canvas.width - roomSize),
+                    y: Math.random() * (canvas.height - roomSize),
+                    width: roomSize,
+                    height: roomSize
+                };
+                rooms.push(room);
+            }
+        }
 
-window.addEventListener("keydown", (e) => {
-    if (e.key === " ") {
-        bullets.push({ x: player.x + player.width / 2, y: player.y, speed: 5 });
-    }
-});
+        function drawRooms() {
+            rooms.forEach(room => {
+                ctx.fillStyle = "#444";
+                ctx.fillRect(room.x, room.y, room.width, room.height);
+            });
+        }
 
-function moveBullets() {
-    bullets.forEach((bullet, index) => {
-        bullet.y -= bullet.speed;
-        if (bullet.y < 0) bullets.splice(index, 1); // удаляем, если улетает за экран
-    });
-}
+        // Генерация врагов
+        const enemies = [];
 
-function drawBullets() {
-    bullets.forEach(bullet => {
-        ctx.fillStyle = "yellow";
-        ctx.fillRect(bullet.x, bullet.y, 5, 10);
-    });
-}
+        function generateEnemies() {
+            rooms.forEach(room => {
+                const enemy = {
+                    x: room.x + Math.random() * room.width,
+                    y: room.y + Math.random() * room.height,
+                    width: 20,
+                    height: 20,
+                    color: "red",
+                    speed: 1
+                };
+                enemies.push(enemy);
+            });
+        }
 
-function checkBulletCollisions() {
-    bullets.forEach((bullet, bIndex) => {
-        enemies.forEach((enemy, eIndex) => {
-            if (bullet.x < enemy.x + enemy.width &&
-                bullet.x + 5 > enemy.x &&
-                bullet.y < enemy.y + enemy.height &&
-                bullet.y + 10 > enemy.y) {
-                enemies.splice(eIndex, 1); // удаляем врага
-                bullets.splice(bIndex, 1); // удаляем пулю
+        function drawEnemies() {
+            enemies.forEach(enemy => {
+                ctx.fillStyle = enemy.color;
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+            });
+        }
+
+        // Проверка столкновений с врагами
+        function checkCollisions() {
+            enemies.forEach((enemy, index) => {
+                if (player.x < enemy.x + enemy.width &&
+                    player.x + player.width > enemy.x &&
+                    player.y < enemy.y + enemy.height &&
+                    player.y + player.height > enemy.y) {
+                    enemies.splice(index, 1); // убираем врага при столкновении
+                }
+            });
+        }
+
+        // Оружие и стрельба
+        const bullets = [];
+
+        window.addEventListener("keydown", (e) => {
+            if (e.key === " ") {
+                bullets.push({ x: player.x + player.width / 2, y: player.y, speed: 5 });
             }
         });
-    });
-}
 
-function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function moveBullets() {
+            bullets.forEach((bullet, index) => {
+                bullet.y -= bullet.speed;
+                if (bullet.y < 0) bullets.splice(index, 1); // удаляем, если улетает за экран
+            });
+        }
 
-    drawRooms();
-    movePlayer();
-    drawPlayer();
-    moveBullets();
-    drawBullets();
-    drawEnemies();
-    checkCollisions();
-    checkBulletCollisions();
+        function drawBullets() {
+            bullets.forEach(bullet => {
+                ctx.fillStyle = "yellow";
+                ctx.fillRect(bullet.x, bullet.y, 5, 10);
+            });
+        }
 
-    requestAnimationFrame(gameLoop);
-}
+        function checkBulletCollisions() {
+            bullets.forEach((bullet, bIndex) => {
+                enemies.forEach((enemy, eIndex) => {
+                    if (bullet.x < enemy.x + enemy.width &&
+                        bullet.x + 5 > enemy.x &&
+                        bullet.y < enemy.y + enemy.height &&
+                        bullet.y + 10 > enemy.y) {
+                        enemies.splice(eIndex, 1); // удаляем врага
+                        bullets.splice(bIndex, 1); // удаляем пулю
+                    }
+                });
+            });
+        }
+
+        // Основной игровой цикл
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawRooms();
+            movePlayer();
+            drawPlayer();
+            moveBullets();
+            drawBullets();
+            drawEnemies();
+            checkCollisions();
+            checkBulletCollisions();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Генерация объектов и запуск игры
+        generateRooms();
+        generateEnemies();
+        gameLoop();
+    </script>
+</body>
+</html>
