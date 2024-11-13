@@ -148,7 +148,7 @@
         let monstersRemaining = 0;
         let totalMonsters = 0;
         let isGameRunning = false;
-        let selectedMap = ""; // Variable to track selected map
+        let selectedMap = ""; 
 
         const characterSettings = {
             "Салага": { damage: 50, hp: 50 },
@@ -267,12 +267,11 @@
         }
 
         function selectMap(map) {
-            selectedMap = map; // Track the current map
+            selectedMap = map; 
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden");
-            gameCanvas.style.display = "block";
             totalMonsters = maps[map].totalEnemies;
-            initEnemies(15); // Спавн начальных 15 монстров
+            initEnemies(15); 
             isGameRunning = true;
             gameLoop();
         }
@@ -287,7 +286,6 @@
                 balance += maps[selectedMap].reward;
                 updateBalance();
                 
-                // Разблокировка следующей карты после прохождения текущей
                 if (selectedMap === "Первая карта" && !unlockedMaps.includes("Вторая карта")) {
                     unlockedMaps.push("Вторая карта");
                     alert("Поздравляем! Вторая карта теперь доступна.");
@@ -351,6 +349,24 @@
                 unlockedMaps
             };
             localStorage.setItem(nickname, JSON.stringify(gameData));
+        }
+
+        function shoot() {
+            bullets.push({ x: player.x + 10, y: player.y, dx: 0, dy: 0 });
+        }
+
+        function gameLoop() {
+            if (!isGameRunning) return;
+
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            movePlayer();
+            drawEntities();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function drawEntities() {
+            ctx.fillStyle = "blue";
+            ctx.fillRect(player.x, player.y, 20, 20);
         }
     </script>
 </body>
