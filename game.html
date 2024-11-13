@@ -277,109 +277,25 @@
             gameLoop();
         }
 
-        function updateBullets() {
-            bullets.forEach((bullet, bulletIndex) => {
-                const angle = Math.atan2(targetY - bullet.y, targetX - bullet.x);
-                const speed = 5;
-                bullet.dx = Math.cos(angle) * speed;
-                bullet.dy = Math.sin(angle) * speed;
-
-                bullet.x += bullet.dx;
-                bullet.y += bullet.dy;
-
-                if (bullet.x < 0 || bullet.x > gameCanvas.width || bullet.y < 0 || bullet.y > gameCanvas.height) {
-                    bullets.splice(bulletIndex, 1);
-                    return;
-                }
-
-                enemies.forEach((enemy, enemyIndex) => {
-                    if (
-                        bullet.x < enemy.x + 20 &&
-                        bullet.x + 5 > enemy.x &&
-                        bullet.y < enemy.y + 20 &&
-                        bullet.y + 5 > enemy.y
-                    ) {
-                        enemy.hp -= playerDamage;
-                        bullets.splice(bulletIndex, 1);
-                        if (enemy.hp <= 0) {
-                            enemies.splice(enemyIndex, 1);
-                            monstersRemaining--;
-                            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
-
-                            if (monstersRemaining === 0 && totalMonsters > 0) {
-                                const remainingMonsters = Math.min(15, totalMonsters - monstersRemaining);
-                                initEnemies(remainingMonsters);
-                                totalMonsters -= remainingMonsters;
-                            }
-                        }
-                    }
-                });
-            });
-        }
-
-        function updateEnemies() {
-            enemies.forEach((enemy) => {
-                const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
-                enemy.x += Math.cos(angle);
-                enemy.y += Math.sin(angle);
-
-                if (
-                    player.x < enemy.x + 20 &&
-                    player.x + 20 > enemy.x &&
-                    player.y < enemy.y + 20 &&
-                    player.y + 20 > enemy.y
-                ) {
-                    playerHP -= 5;
-                    updatePlayerHP();
-                    if (playerHP <= 0) {
-                        endGame();
-                    }
-                }
-            });
-        }
-
-        function shoot() {
-            bullets.push({
-                x: player.x + 10,
-                y: player.y,
-                dx: 0,
-                dy: 0
-            });
-        }
-
-        function gameLoop() {
-            if (!isGameRunning) return;
-
-            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-            movePlayer();
-            updateBullets();
-            updateEnemies();
-            drawEntities();
-            if (playerHP > 0 && (monstersRemaining > 0 || totalMonsters > 0)) {
-                requestAnimationFrame(gameLoop);
-            } else {
-                endGame();
-            }
-        }
-
-        function drawEntities() {
-            ctx.fillStyle = "blue";
-            ctx.fillRect(player.x, player.y, 20, 20);
-            ctx.fillStyle = "yellow";
-            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
-            ctx.fillStyle = "red";
-            enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
-        }
-
         function endGame() {
             isGameRunning = false;
             gameCanvas.style.display = "none";
             monsterCountDisplay.classList.add("hidden");
             playerHPDisplay.classList.add("hidden");
-            
+
             if (playerHP > 0) {
                 balance += maps[selectedMap].reward;
                 updateBalance();
+                
+                // Разблокировка следующей карты после прохождения текущей
+                if (selectedMap === "Первая карта" && !unlockedMaps.includes("Вторая карта")) {
+                    unlockedMaps.push("Вторая карта");
+                    alert("Поздравляем! Вторая карта теперь доступна.");
+                } else if (selectedMap === "Вторая карта" && !unlockedMaps.includes("Третья карта")) {
+                    unlockedMaps.push("Третья карта");
+                    alert("Поздравляем! Третья карта теперь доступна.");
+                }
+
                 saveGameData();
                 alert("Уровень завершен!");
             } else {
