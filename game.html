@@ -196,7 +196,9 @@
 
         function playBackgroundMusic() {
             backgroundMusic.volume = 0.5;
-            backgroundMusic.play();
+            backgroundMusic.play().catch((error) => {
+                console.error("Не удалось воспроизвести музыку:", error);
+            });
         }
 
         function stopBackgroundMusic() {
@@ -279,7 +281,7 @@
                 enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
             }
             monstersRemaining = count;
-            monsterCountDisplay.textContent = `Монстров: ${totalMonстров - monstersRemaining}`;
+            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
             monsterCountDisplay.classList.remove("hidden");
             playerHPDisplay.classList.remove("hidden");
         }
@@ -322,12 +324,12 @@
                         if (enemy.hp <= 0) {
                             enemies.splice(enemyIndex, 1);
                             monstersRemaining--;
-                            monsterCountDisplay.textContent = `Монстров: ${totalMonстров - monstersRemaining}`;
+                            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
 
                             if (monstersRemaining === 0 && totalMonsters > 0) {
-                                const remainingMonsters = Math.min(15, totalMonстров - monstersRemaining);
+                                const remainingMonsters = Math.min(15, totalMonsters - monstersRemaining);
                                 initEnemies(remainingMonsters);
-                                totalMonстры -= remainingMonстр;es;
+                                totalMonsters -= remainingMonsters;
                             }
                         }
                     }
