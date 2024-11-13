@@ -88,9 +88,9 @@
         <button onclick="backToMenu()">Назад</button>
     </div>
 
-    <!-- Меню выбора карты -->
+    <!-- Меню выбора карты и уровня -->
     <div id="mapSelection" class="hidden">
-        <h2>Выберите карту</h2>
+        <h2>Выберите карту и уровень</h2>
         <div id="mapButtons"></div> <!-- Кнопки карт генерируются динамически -->
         <button onclick="backToCharacterSelection()">Назад</button>
     </div>
@@ -116,11 +116,11 @@
         let currentLevel = 1;
         const purchasedCharacters = ["Салага"];  // По умолчанию "Салага" доступен бесплатно
 
-        // Карты с уровнями и разблокировкой
+        // Карты с уровнями сложности
         const maps = {
-            "Начальная": { levels: 2, unlocked: true },
-            "Продвинутая": { levels: 2, unlocked: false },
-            "Магическая": { levels: 3, unlocked: false }
+            "Начальная": { levels: ["Начальный", "Продвинутый"], unlocked: true },
+            "Продвинутая": { levels: ["Начальный", "Продвинутый"], unlocked: false },
+            "Магическая": { levels: ["Начальный", "Продвинутый", "Эксперт"], unlocked: false }
         };
 
         // Обновление баланса на экране
@@ -179,23 +179,26 @@
             if (purchasedCharacters.includes(character)) {
                 selectedCharacter = character;
                 characterSelection.classList.add("hidden");
-                mapSelection.classList.remove("hidden"); // Переходим к выбору карты
+                mapSelection.classList.remove("hidden"); // Переходим к выбору карты и уровня
                 displayAvailableMaps();
             } else {
                 alert(`Персонаж ${character} не куплен. Купите его в магазине.`);
             }
         }
 
-        // Отображение доступных карт
+        // Отображение доступных карт и их уровней
         function displayAvailableMaps() {
             mapButtons.innerHTML = ""; // Очистка предыдущих кнопок
 
             for (const [mapName, mapData] of Object.entries(maps)) {
-                const button = document.createElement("button");
-                button.textContent = `${mapName} (уровней: ${mapData.levels})`;
-                button.disabled = !mapData.unlocked;  // Блокируем, если карта не разблокирована
-                button.onclick = () => selectMap(mapName);
-                mapButtons.appendChild(button);
+                if (mapData.unlocked) {
+                    mapData.levels.forEach(level => {
+                        const button = document.createElement("button");
+                        button.textContent = `${mapName} - ${level}`;
+                        button.onclick = () => selectMap(mapName, level);
+                        mapButtons.appendChild(button);
+                    });
+                }
             }
         }
 
@@ -205,24 +208,27 @@
             characterSelection.classList.remove("hidden");
         }
 
-        // Выбор карты и старт уровня
-        function selectMap(map) {
+        // Выбор карты и уровня
+        function selectMap(map, level) {
             selectedMap = map;
-            currentLevel = 1; // Начинаем с первого уровня карты
+            currentLevel = level;
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden"); // Переходим к игровому экрану
             startGame();
         }
 
-        // Завершение уровня и проверка разблокировки
+        // Завершение уровня и разблокировка следующей карты
         function completeLevel() {
-            if (currentLevel < maps[selectedMap].levels) {
-                currentLevel++;  // Переходим на следующий уровень на той же карте
-                alert(`Переход на уровень ${currentLevel} на карте ${selectedMap}`);
+            const currentMap = maps[selectedMap];
+            const levelIndex = currentMap.levels.indexOf(currentLevel);
+            
+            if (levelIndex < currentMap.levels.length - 1) {
+                currentLevel = currentMap.levels[levelIndex + 1];  // Переход на следующий уровень
+                alert(`Переход на уровень "${currentLevel}" на карте ${selectedMap}`);
             } else {
                 alert(`Карта ${selectedMap} пройдена!`);
                 unlockNextMap();
-                goToCharacterSelection(); // Возвращаемся к выбору персонажа после прохождения карты
+                goToCharacterSelection(); // Возвращаемся к выбору персонажа после завершения карты
             }
         }
 
@@ -250,7 +256,6 @@
         // Пример игрового цикла
         function gameLoop() {
             ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);  // Очистка экрана
-            // Пример: нарисуем выбранного персонажа и уровень карты
             ctx.fillStyle = "white";
             ctx.font = "24px Arial";
             ctx.fillText(`Персонаж: ${selectedCharacter}`, 50, 50);
