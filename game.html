@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Игра с монстрами и HP</title>
     <style>
         body, html {
@@ -175,9 +176,9 @@
                 balance = gameData.balance;
                 purchasedCharacters = gameData.purchasedCharacters;
                 unlockedMaps = gameData.unlockedMaps;
-                alert(Добро пожаловать, ${nickname}! Данные загружены.);
+                alert(`Добро пожаловать, ${nickname}! Данные загружены.`);
             } else {
-                alert(Добро пожаловать, ${nickname}! Начнем новую игру.);
+                alert(`Добро пожаловать, ${nickname}! Начнем новую игру.`);
             }
 
             updateBalance();
@@ -187,11 +188,11 @@
         }
 
         function updateBalance() {
-            balanceDisplay.textContent = Баланс: ${balance} руб.;
+            balanceDisplay.textContent = `Баланс: ${balance} руб.`;
         }
 
         function updatePlayerHP() {
-            playerHPDisplay.textContent = HP: ${playerHP};
+            playerHPDisplay.textContent = `HP: ${playerHP}`;
         }
 
         function goToCharacterSelection() {
@@ -220,7 +221,7 @@
                 mapSelection.classList.remove("hidden");
                 displayAvailableMaps();
             } else {
-                alert(Персонаж ${character} не куплен. Купите его в магазине.);
+                alert(`Персонаж ${character} не куплен. Купите его в магазине.`);
             }
         }
 
@@ -231,13 +232,13 @@
 
         function buyCharacter(character, cost) {
             if (purchasedCharacters.includes(character)) {
-                alert(${character} уже куплен.);
+                alert(`${character} уже куплен.`);
             } else if (balance >= cost) {
                 balance -= cost;
                 purchasedCharacters.push(character);
                 updateBalance();
                 saveGameData();
-                alert(${character} куплен!);
+                alert(`${character} куплен!`);
             } else {
                 alert("Недостаточно средств.");
             }
@@ -261,7 +262,7 @@
                 enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
             }
             monstersRemaining = count;
-            monsterCountDisplay.textContent = Монстров: ${totalMonsters - monstersRemaining};
+            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
             monsterCountDisplay.classList.remove("hidden");
             playerHPDisplay.classList.remove("hidden");
         }
@@ -304,7 +305,7 @@
                         if (enemy.hp <= 0) {
                             enemies.splice(enemyIndex, 1);
                             monstersRemaining--;
-                            monsterCountDisplay.textContent = Монстров: ${totalMonsters - monstersRemaining};
+                            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
 
                             if (monstersRemaining === 0 && totalMonsters > 0) {
                                 const remainingMonsters = Math.min(15, totalMonsters - monstersRemaining);
