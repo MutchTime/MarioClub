@@ -20,7 +20,7 @@
             display: none;
         }
 
-        #menu, #characterSelection, #mapSelection {
+        #menu, #characterSelection, #mapSelection, #shop {
             text-align: center;
             color: white;
         }
@@ -49,13 +49,26 @@
             width: 800px;
             height: 600px;
         }
+
+        /* Стили для отображения баланса */
+        #balance {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: white;
+        }
     </style>
 </head>
 <body>
+    <!-- Отображение баланса -->
+    <div id="balance">Баланс: 500 руб.</div>
+
     <!-- Главное меню -->
     <div id="menu">
         <h1>Моя Игра</h1>
         <button onclick="goToCharacterSelection()">Играть</button>
+        <button onclick="goToShop()">Магазин</button>
     </div>
 
     <!-- Меню выбора персонажа -->
@@ -64,6 +77,16 @@
         <button onclick="selectCharacter('Салага')">Салага</button>
         <button onclick="selectCharacter('Солдат')">Солдат</button>
         <button onclick="selectCharacter('Маг')">Маг</button>
+        <button onclick="backToMenu()">Назад</button>
+    </div>
+
+    <!-- Магазин -->
+    <div id="shop" class="hidden">
+        <h2>Магазин</h2>
+        <p>Купите персонажа:</p>
+        <button onclick="buyCharacter('Салага', 0)">Салага - Бесплатно</button>
+        <button onclick="buyCharacter('Солдат', 1000)">Солдат - 1000 руб.</button>
+        <button onclick="buyCharacter('Маг', 2500)">Маг - 2500 руб.</button>
         <button onclick="backToMenu()">Назад</button>
     </div>
 
@@ -84,11 +107,20 @@
         const menu = document.getElementById("menu");
         const characterSelection = document.getElementById("characterSelection");
         const mapSelection = document.getElementById("mapSelection");
+        const shop = document.getElementById("shop");
         const gameCanvas = document.getElementById("gameCanvas");
+        const balanceDisplay = document.getElementById("balance");
         const ctx = gameCanvas.getContext("2d");
 
+        let balance = 500;  // Начальный баланс
         let selectedCharacter = null;
         let selectedMap = null;
+        const purchasedCharacters = ["Салага"];  // По умолчанию "Салага" доступен бесплатно
+
+        // Обновление баланса на экране
+        function updateBalance() {
+            balanceDisplay.textContent = `Баланс: ${balance} руб.`;
+        }
 
         // Переход к выбору персонажа
         function goToCharacterSelection() {
@@ -96,17 +128,42 @@
             characterSelection.classList.remove("hidden");
         }
 
+        // Переход к магазину
+        function goToShop() {
+            menu.classList.add("hidden");
+            shop.classList.remove("hidden");
+        }
+
         // Переход назад в главное меню
         function backToMenu() {
             characterSelection.classList.add("hidden");
+            shop.classList.add("hidden");
             menu.classList.remove("hidden");
+        }
+
+        // Покупка персонажа
+        function buyCharacter(character, cost) {
+            if (purchasedCharacters.includes(character)) {
+                alert(`${character} уже куплен.`);
+            } else if (balance >= cost) {
+                balance -= cost;
+                purchasedCharacters.push(character);
+                updateBalance();
+                alert(`${character} куплен!`);
+            } else {
+                alert("Недостаточно средств.");
+            }
         }
 
         // Выбор персонажа
         function selectCharacter(character) {
-            selectedCharacter = character;
-            characterSelection.classList.add("hidden");
-            mapSelection.classList.remove("hidden"); // Переходим к выбору карты
+            if (purchasedCharacters.includes(character)) {
+                selectedCharacter = character;
+                characterSelection.classList.add("hidden");
+                mapSelection.classList.remove("hidden"); // Переходим к выбору карты
+            } else {
+                alert(`Персонаж ${character} не куплен. Купите его в магазине.`);
+            }
         }
 
         // Переход назад к выбору персонажа
@@ -147,6 +204,9 @@
             // Продолжаем игровой цикл
             requestAnimationFrame(gameLoop);
         }
+
+        // Инициализация начального баланса
+        updateBalance();
     </script>
 </body>
 </html>
