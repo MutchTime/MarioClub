@@ -93,7 +93,6 @@
         <h1>Моя Игра</h1>
         <button onclick="goToCharacterSelection()">Играть</button>
         <button onclick="goToShop()">Магазин</button>
-        <button onclick="playBackgroundMusic()">Включить музыку</button>
     </div>
 
     <!-- Меню выбора персонажа -->
@@ -123,12 +122,6 @@
     <!-- Игровой канвас -->
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-    <!-- Аудио для 8bit музыки -->
-    <audio id="backgroundMusic" loop>
-        <source src="8bit-music.mp3" type="audio/mpeg">
-        Ваш браузер не поддерживает элемент <code>audio</code>.
-    </audio>
-
     <script>
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
@@ -142,7 +135,6 @@
         const monsterCountDisplay = document.getElementById("monsterCount");
         const playerHPDisplay = document.getElementById("playerHP");
         const nicknameInput = document.getElementById("nicknameInput");
-        const backgroundMusic = document.getElementById("backgroundMusic");
         const ctx = gameCanvas.getContext("2d");
 
         let nickname = "";
@@ -193,18 +185,6 @@
             nicknameScreen.classList.add("hidden");
             menu.classList.remove("hidden");
             balanceDisplay.classList.remove("hidden");
-        }
-
-        function playBackgroundMusic() {
-            backgroundMusic.volume = 0.5;
-            backgroundMusic.play().catch((error) => {
-                console.error("Не удалось воспроизвести музыку:", error);
-            });
-        }
-
-        function stopBackgroundMusic() {
-            backgroundMusic.pause();
-            backgroundMusic.currentTime = 0;
         }
 
         function updateBalance() {
@@ -447,4 +427,27 @@
 
         function movePlayer() {
             if (keys["ArrowUp"] && player.y > 0) player.y -= player.speed;
-            if (keys["ArrowDown"] && player.y < gameCanvas.height - 20)
+            if (keys["ArrowDown"] && player.y < gameCanvas.height - 20) player.y += player.speed;
+            if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
+            if (keys["ArrowRight"] && player.x < gameCanvas.width - 20) player.x += player.speed;
+        }
+
+        gameCanvas.addEventListener("mousemove", (e) => {
+            const rect = gameCanvas.getBoundingClientRect();
+            targetX = e.clientX - rect.left;
+            targetY = e.clientY - rect.top;
+        });
+
+        gameCanvas.addEventListener("click", shoot);
+
+        function saveGameData() {
+            const gameData = {
+                balance,
+                purchasedCharacters,
+                unlockedMaps
+            };
+            localStorage.setItem(nickname, JSON.stringify(gameData));
+        }
+    </script>
+</body>
+</html>
