@@ -74,9 +74,7 @@
     <!-- Меню выбора персонажа -->
     <div id="characterSelection" class="hidden">
         <h2>Выберите персонажа</h2>
-        <button onclick="selectCharacter('Салага')">Салага</button>
-        <button onclick="selectCharacter('Солдат')">Солдат</button>
-        <button onclick="selectCharacter('Маг')">Маг</button>
+        <div id="characterButtons"></div> <!-- Кнопки персонажей генерируются динамически -->
         <button onclick="backToMenu()">Назад</button>
     </div>
 
@@ -106,6 +104,7 @@
         // Получаем элементы из HTML
         const menu = document.getElementById("menu");
         const characterSelection = document.getElementById("characterSelection");
+        const characterButtons = document.getElementById("characterButtons");
         const mapSelection = document.getElementById("mapSelection");
         const shop = document.getElementById("shop");
         const gameCanvas = document.getElementById("gameCanvas");
@@ -126,6 +125,19 @@
         function goToCharacterSelection() {
             menu.classList.add("hidden");
             characterSelection.classList.remove("hidden");
+            displayPurchasedCharacters();
+        }
+
+        // Отображение только купленных персонажей в меню выбора персонажа
+        function displayPurchasedCharacters() {
+            characterButtons.innerHTML = ""; // Очистка предыдущих кнопок
+
+            purchasedCharacters.forEach(character => {
+                const button = document.createElement("button");
+                button.textContent = character;
+                button.onclick = () => selectCharacter(character);
+                characterButtons.appendChild(button);
+            });
         }
 
         // Переход к магазину
