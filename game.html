@@ -50,12 +50,6 @@
             font-size: 24px;
             color: white;
         }
-
-        #nicknameInput {
-            font-size: 20px;
-            padding: 10px;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
@@ -76,9 +70,28 @@
         <button onclick="goToShop()">Магазин</button>
     </div>
 
+    <!-- Меню выбора персонажа -->
+    <div id="characterSelection" class="hidden">
+        <h2>Выберите персонажа</h2>
+        <div id="characterButtons"></div>
+        <button onclick="backToMenu()">Назад</button>
+    </div>
+
+    <!-- Магазин -->
+    <div id="shop" class="hidden">
+        <h2>Магазин</h2>
+        <p>Купите персонажа:</p>
+        <button onclick="buyCharacter('Салага', 0)">Салага - Бесплатно</button>
+        <button onclick="buyCharacter('Солдат', 1000)">Солдат - 1000 руб.</button>
+        <button onclick="buyCharacter('Маг', 2500)">Маг - 2500 руб.</button>
+        <button onclick="backToMenu()">Назад</button>
+    </div>
+
     <script>
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
+        const characterSelection = document.getElementById("characterSelection");
+        const shop = document.getElementById("shop");
         const balanceDisplay = document.getElementById("balance");
         const nicknameInput = document.getElementById("nicknameInput");
 
@@ -87,25 +100,15 @@
         let purchasedCharacters = ["Салага"];
         let unlockedMaps = ["Первая карта"];
 
-        function saveGameData() {
-            const gameData = {
-                balance,
-                purchasedCharacters,
-                unlockedMaps
-            };
-            localStorage.setItem(nickname, JSON.stringify(gameData));
-        }
-
+        // Инициализация игры
         function initializeGame() {
-            console.log("Кнопка 'Начать игру' нажата"); // Отладка: проверяем, нажата ли кнопка
+            console.log("Кнопка 'Начать игру' нажата");
 
             nickname = nicknameInput.value.trim();
             if (!nickname) {
                 alert("Пожалуйста, введите никнейм!");
                 return;
             }
-
-            console.log("Никнейм:", nickname); // Отладка: проверяем, захвачен ли никнейм
 
             const savedData = localStorage.getItem(nickname);
             if (savedData) {
@@ -122,11 +125,34 @@
             nicknameScreen.classList.add("hidden");
             menu.classList.remove("hidden");
             balanceDisplay.classList.remove("hidden");
-            console.log("Игра инициализирована"); // Отладка: проверяем, завершена ли инициализация
+            console.log("Игра инициализирована");
         }
 
+        // Обновление баланса
         function updateBalance() {
             balanceDisplay.textContent = `Баланс: ${balance} руб.`;
+        }
+
+        // Переход к выбору персонажа
+        function goToCharacterSelection() {
+            console.log("Кнопка 'Играть' нажата");
+            menu.classList.add("hidden");
+            characterSelection.classList.remove("hidden");
+        }
+
+        // Переход к магазину
+        function goToShop() {
+            console.log("Кнопка 'Магазин' нажата");
+            menu.classList.add("hidden");
+            shop.classList.remove("hidden");
+        }
+
+        // Переход назад в главное меню
+        function backToMenu() {
+            characterSelection.classList.add("hidden");
+            shop.classList.add("hidden");
+            menu.classList.remove("hidden");
+            console.log("Возвращение в главное меню");
         }
     </script>
 </body>
