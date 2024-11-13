@@ -64,6 +64,7 @@
         <button onclick="selectCharacter('Салага')">Салага</button>
         <button onclick="selectCharacter('Солдат')">Солдат</button>
         <button onclick="selectCharacter('Маг')">Маг</button>
+        <button onclick="backToMenu()">Назад</button>
     </div>
 
     <!-- Меню выбора карты -->
@@ -72,6 +73,7 @@
         <button onclick="selectMap('Лес')">Лес</button>
         <button onclick="selectMap('Пустыня')">Пустыня</button>
         <button onclick="selectMap('Горы')">Горы</button>
+        <button onclick="backToCharacterSelection()">Назад</button>
     </div>
 
     <!-- Игровой канвас -->
@@ -94,11 +96,23 @@
             characterSelection.classList.remove("hidden");
         }
 
+        // Переход назад в главное меню
+        function backToMenu() {
+            characterSelection.classList.add("hidden");
+            menu.classList.remove("hidden");
+        }
+
         // Выбор персонажа
         function selectCharacter(character) {
             selectedCharacter = character;
             characterSelection.classList.add("hidden");
             mapSelection.classList.remove("hidden"); // Переходим к выбору карты
+        }
+
+        // Переход назад к выбору персонажа
+        function backToCharacterSelection() {
+            mapSelection.classList.add("hidden");
+            characterSelection.classList.remove("hidden");
         }
 
         // Выбор карты
