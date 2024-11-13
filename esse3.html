@@ -1,191 +1,400 @@
-
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мои три эссе</title>
+    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра с монстрами и HP</title>
     <style>
-        body {
-            font-family: Times New Roman, sans-serif;
+        body, html {
             margin: 0;
             padding: 0;
-             background-image: url('https://images4.alphacoders.com/866/866986.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #333;
+            font-family: Arial, sans-serif;
         }
-        header {
-            color: #000000;
-            padding: 20px 0;
+
+        .hidden {
+            display: none;
+        }
+
+        #nicknameScreen, #menu, #characterSelection, #mapSelection, #shop {
             text-align: center;
+            color: white;
         }
-        section {
-            margin: 20px auto;
-            max-width: 800px;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+        h1, h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
         }
-    h1 {
-        color:#8B0000;
-    }
-    h2 {
-            color: #000000;
-            padding: 20px;
-            line-height: 1.2;
-            font-family: Times New Roman;
-            text-align: center;
-           }
-    h3 { 
-            color: #000000;
-            padding: 18px;
-           font-family: Times New Roman;
-            text-align: sans-serif;
-       }
-     h4 {
-            color: #000000;
-            padding: 16px;
-            line-height: 1.2;
-            font-family: Times New Roman;
-            text-align: sans-serif;
-     }
-    p {
-            color: #333;
-            padding: 14px;
-            line-height: 1.5;
-            font-family: Times New Roman;
-            text-align: justify;
-        }
-     h5 { 
-            color: #000000;
-            padding: 20px;
-            line-height: 1.2;
-            font-family: Times New Roman;
-            text-align: center;
-     }
-        .back-to-top {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: none;
-    background: linear-gradient(145deg, #0000FF, #000080); /* Градиент для объёма */
-    color: #FF0000;
-    padding: 10px;
-    border: none;
-    border-radius: 50%; /* Круглая форма */
-    cursor: pointer;
-    font-size: 20px;
-    width: 60px; /* Увеличенная ширина кнопки */
-    height: 60px; /* Увеличенная высота кнопки */
-    text-align: center;
-    line-height: 60px; /* Вертикальное выравнивание символа стрелки */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Объёмная тень */
-    transition: all 0.3s ease; /* Плавный переход при наведении */
-}
 
-.back-to-top:hover {
-    background: linear-gradient(145deg, #0056b3, #007BFF); /* Обратный градиент при наведении */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* Более сильная тень при наведении */
-}
-
-        a {
-    color: ##8B0000;
-    text-decoration: none;
-}
-
-    a:visited {
-    color: ##8B0000;
-}
-
-    a:hover {
-    color: ##8B0000;
-    text-decoration: underline;
-}
-
-    a:active {
-    color: ##8B0000;
-}
-
-
-.button-link {
-            position: fixed; 
-            top: 10px;      
-            left: 10px;      
+        button {
+            font-size: 24px;
             padding: 10px 20px;
-            font-size: 16px;
-            color: black;
-            background-image: url('https://ybis.ru/wp-content/uploads/2023/09/led-1-1.webp');
-             background-size: 600% 191%;
-            text-align: center;
-            text-decoration: none;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
             border-radius: 5px;
-            transition: background-color 0.3s ease;
         }
-        .button-link:hover {
-            background-color: #45a049; / Изменение цвета при наведении */
-        }                        
-</style>
+
+        button:hover {
+            background-color: #555;
+            color: white;
+        }
+
+        #gameCanvas {
+            background-color: #222;
+            width: 800px;
+            height: 600px;
+            display: none;
+        }
+
+        #balance {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: white;
+        }
+
+        #monsterCount, #playerHP {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            font-size: 20px;
+            color: white;
+        }
+
+        #playerHP {
+            top: 20px;
+            left: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div> 
-    <a href="index.html" class="button-link">Главная</a>
+    <!-- Экран ввода никнейма -->
+    <div id="nicknameScreen">
+        <h2>Введите свой никнейм:</h2>
+        <input type="text" id="nicknameInput" placeholder="Никнейм">
+        <button onclick="initializeGame()">Начать игру</button>
     </div>
-    <header>
-        <h1> 3 ЭССЕ</h1>
-    </header>
-    <section>
-          <h2>Содержание</h2>
-         <h3><a href="#esse3-t1">1. Мои идеи и проекты в будущем</a></h3>
-        <h3><a href="#esse3-t2">2. Будущие проекты и идеи</a></h3>
-        <h3><a href="#esse3-t3">3. Дипломная работа и тема исследования</a></h3>
-        <h3><a href="#esse3-t4">4. Мечты и планы на будущее</a></h3>
-      <h3>5<a href="#esse3-t5">. Кем я хочу стать</a></h3>
-       <h3><a href="#esse3-t6">6. Заключение</a></h3>
-    </section>
-  <section>
-  <h2 id="esse3-t1">Мои идеи и проекты в будущем</h2>
-    <p>Поступив на специальность программиста, я осознал, насколько широки перспективы и возможности, которые открываются передо мной в этой профессии. Мир технологий стремительно развивается, и каждый день приносит что-то новое. Я с большим интересом наблюдаю за инновациями в IT-сфере и понимаю, что у меня есть все шансы стать частью этого невероятного процесса. В этом эссе я хотел бы рассказать о своих мечтах, идеях и проектах, которые планирую реализовать в будущем, а также о том, каким образом я собираюсь развиваться как профессионал</p>
-  <h2 id="esse3-t2">Будущие проекты и иде</h2>
-    <p>Одной из моих главных целей является разработка собственных программных продуктов, которые будут решать конкретные проблемы и приносить пользу пользователям. Программирование — это не только инструмент для решения задач, но и мощный инструмент творчества. Мне интересно создавать решения, которые могут улучшить жизнь людей, автоматизировать процессы, ускорить их и сделать более удобными</p>
-    <p>Одной из моих идей является создание приложения, которое поможет людям управлять временем и эффективно распределять свои задачи. На данный момент существует множество планировщиков и трекеров времени, однако я вижу потенциал для их улучшения. В моем проекте хотелось бы сделать упор на интеграцию искусственного интеллекта, который бы анализировал поведение пользователя и помогал ему оптимизировать свое расписание. Например, приложение могло бы предлагать лучший порядок выполнения задач на основе анализа их приоритетности и доступного времени.</p>
-    <p>Еще одной важной областью для меня является разработка образовательных программных продуктов. Образование становится всё более доступным благодаря интернету, и я хочу внести свой вклад в эту сферу. Идея заключается в создании интерактивной платформы для обучения программированию, которая бы включала не только традиционные курсы, но и возможность практиковаться через игровые сценарии и симуляции реальных задач. Важно создать систему, которая бы не только обучала, но и мотивировала пользователей продолжать учиться, развивая навыки на практике</p>
-  <h2 id="esse3-t3">Дипломная работа и тема исследования</h2>
-    <p>Когда я думаю о теме для дипломной работы, на ум приходит несколько направлений, в которых мне бы хотелось углубиться. Одним из таких направлений является машинное обучение и искусственный интеллект. В последние годы эта область стала особенно популярной и значимой, поскольку возможности ИИ применимы в различных сферах — от медицины и финансов до игр и маркетинга. Я бы хотел посвятить дипломное исследование разработке и обучению нейронных сетей, которые могли бы решать сложные задачи анализа данных. Это может быть проект, связанный с автоматической классификацией изображений или предсказанием поведения пользователей на основе анализа больших объемов информации.</p>
-    <p>Кроме того, меня привлекает тема автоматизации процессов с использованием программных агентов и ботов. В современном мире многие бизнес-процессы можно значительно ускорить и оптимизировать с помощью программных решений. В качестве дипломного проекта я мог бы разработать систему, которая бы помогала малым предприятиям автоматизировать взаимодействие с клиентами через чат-боты, способные обрабатывать запросы и отвечать на часто задаваемые вопросы</p>
-    <p>Другой потенциальной темой диплома может стать создание безопасных систем для защиты данных. С развитием технологий все больше внимания уделяется безопасности, и я считаю это направление крайне важным. Я мог бы изучить способы защиты данных в облачных системах или разработать программное обеспечение для шифрования данных, которое было бы одновременно простым и эффективным для массового пользователя.</p>
-  <h2 id="esse3-t4">Мечты и планы на будущее</h2>
-    <p>Моя главная мечта — стать программистом, способным создавать значимые продукты, которые будут востребованы на рынке. Мне хотелось бы работать в компании, которая занимается инновационными разработками, или же стать частью стартапа, который стремится изменить мир с помощью технологий. В будущем я также вижу себя в роли технического лидера или CTO (Chief Technical Officer), когда смогу не только писать код, но и разрабатывать стратегии для внедрения новых технологий и руководить командой разработчиков.</p>
-    <p>Я понимаю, что для достижения этих целей мне потребуется не только глубокое знание теории и практики программирования, но и развитие «мягких» навыков, таких как управление проектами, коммуникация и умение работать в команде. Поэтому уже сейчас я стремлюсь принимать участие в групповых проектах и стажировках, чтобы получить не только технический опыт, но и улучшить навыки взаимодействия с коллегами</p>
-    <p>Одной из моих долгосрочных целей является работа над крупными проектами в области искусственного интеллекта и больших данных. Я вижу огромное будущее за этой областью, и считаю, что такие технологии могут помочь не только бизнесу, но и науке, медицине и даже образованию. В частности, я мечтаю разработать систему ИИ, которая бы помогала врачам в диагностике заболеваний на ранних стадиях, используя анализ медицинских изображений и данных пациентов</p>
-  <h2 id="esse3-t5">Кем я хочу стать</h2>
-    <p>Выбрав профессию программиста, я осознаю, что это не только одна из самых востребованных профессий в мире, но и одна из тех, которые требуют постоянного саморазвития. В будущем я хотел бы стать высококлассным специалистом, который способен решать сложные задачи и внедрять инновации в реальных проектах. Я планирую работать в команде разработчиков или инженеров, которые создают продукты на пересечении технологий и бизнеса.</p>
-    <p>Одной из моих целей является участие в международных проектах, которые бы помогли мне не только развить свои профессиональные навыки, но и расширить кругозор. Я хочу быть вовлечен в разработку продуктов, которые решают глобальные проблемы, такие как изменение климата, доступ к качественному образованию или здравоохранению.</p>
-  <h2 id="esse3-t6">Заключение</h2>
-    <p>Таким образом, мои мечты и планы на будущее связаны с созданием программных продуктов, которые будут полезны и востребованы обществом. Я стремлюсь к тому, чтобы развить свои навыки в таких направлениях, как искусственный интеллект, автоматизация и безопасность данных, и надеюсь, что смогу реализовать свои идеи как в рамках дипломной работы, так и в своей профессиональной карьере. Путь программиста открывает передо мной множество возможностей, и я готов с интересом исследовать этот мир, совершенствуя свои знания и воплощая в жизнь амбициозные проекты.</p>
-  </section>
-    <button class="back-to-top" id="scrollToTopBtn">Верх</button>
 
-<script>
-    window.onscroll = function() {
-        var scrollToTopBtn = document.getElementById("scrollToTopBtn");
-        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
-            scrollToTopBtn.style.display = "block";
-        } else {
-            scrollToTopBtn.style.display = "none";
+    <!-- Отображение баланса и здоровья игрока -->
+    <div id="balance" class="hidden">Баланс: 500 руб.</div>
+    <div id="playerHP" class="hidden">HP: 0</div>
+
+    <!-- Отображение количества монстров -->
+    <div id="monsterCount" class="hidden">Монстров: 0</div>
+
+    <!-- Главное меню -->
+    <div id="menu" class="hidden">
+        <h1>Моя Игра</h1>
+        <button onclick="goToCharacterSelection()">Играть</button>
+        <button onclick="goToShop()">Магазин</button>
+    </div>
+
+    <!-- Меню выбора персонажа -->
+    <div id="characterSelection" class="hidden">
+        <h2>Выберите персонажа</h2>
+        <div id="characterButtons"></div>
+        <button onclick="backToMenu()">Назад</button>
+    </div>
+
+    <!-- Магазин -->
+    <div id="shop" class="hidden">
+        <h2>Магазин</h2>
+        <p>Купите персонажа:</p>
+        <button onclick="buyCharacter('Салага', 0)">Салага - Бесплатно</button>
+        <button onclick="buyCharacter('Солдат', 1000)">Солдат - 1000 руб.</button>
+        <button onclick="buyCharacter('Маг', 2500)">Маг - 2500 руб.</button>
+        <button onclick="backToMenu()">Назад</button>
+    </div>
+
+    <!-- Меню выбора карты -->
+    <div id="mapSelection" class="hidden">
+        <h2>Выберите карту</h2>
+        <div id="mapButtons"></div>
+        <button onclick="backToCharacterSelection()">Назад</button>
+    </div>
+
+    <!-- Игровой канвас -->
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <script>
+        const nicknameScreen = document.getElementById("nicknameScreen");
+        const menu = document.getElementById("menu");
+        const characterSelection = document.getElementById("characterSelection");
+        const characterButtons = document.getElementById("characterButtons");
+        const mapSelection = document.getElementById("mapSelection");
+        const mapButtons = document.getElementById("mapButtons");
+        const shop = document.getElementById("shop");
+        const gameCanvas = document.getElementById("gameCanvas");
+        const balanceDisplay = document.getElementById("balance");
+        const monsterCountDisplay = document.getElementById("monsterCount");
+        const playerHPDisplay = document.getElementById("playerHP");
+        const nicknameInput = document.getElementById("nicknameInput");
+        const ctx = gameCanvas.getContext("2d");
+
+        let nickname = "";
+        let balance = 500;
+        let selectedCharacter = "";
+        let playerHP = 0;
+        let purchasedCharacters = ["Салага"];
+        let unlockedMaps = ["Первая карта"];
+        let enemies = [];
+        let bullets = [];
+        let playerDamage = 0;
+        let monstersRemaining = 0;
+        let totalMonsters = 0;
+        let isGameRunning = false;
+        let selectedMap = ""; 
+
+        const characterSettings = {
+            "Салага": { damage: 50, hp: 50 },
+            "Солдат": { damage: 75, hp: 75 },
+            "Маг": { damage: 100, hp: 100 }
+        };
+
+        const maps = {
+            "Первая карта": { reward: 100, totalEnemies: 45 },
+            "Вторая карта": { reward: 300, totalEnemies: 90 },
+            "Третья карта": { reward: 500, totalEnemies: 135 }
+        };
+
+        function initializeGame() {
+            nickname = nicknameInput.value.trim();
+            if (!nickname) {
+                alert("Пожалуйста, введите никнейм!");
+                return;
+            }
+
+            const savedData = localStorage.getItem(nickname);
+            if (savedData) {
+                const gameData = JSON.parse(savedData);
+                balance = gameData.balance;
+                purchasedCharacters = gameData.purchasedCharacters;
+                unlockedMaps = gameData.unlockedMaps;
+                alert(`Добро пожаловать, ${nickname}! Данные загружены.`);
+            } else {
+                alert(`Добро пожаловать, ${nickname}! Начнем новую игру.`);
+            }
+
+            updateBalance();
+            nicknameScreen.classList.add("hidden");
+            menu.classList.remove("hidden");
+            balanceDisplay.classList.remove("hidden");
         }
-    };
 
-    document.getElementById("scrollToTopBtn").onclick = function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+        function updateBalance() {
+            balanceDisplay.textContent = `Баланс: ${balance} руб.`;
+        }
+
+        function updatePlayerHP() {
+            playerHPDisplay.textContent = `HP: ${playerHP}`;
+        }
+
+        function goToCharacterSelection() {
+            menu.classList.add("hidden");
+            characterSelection.classList.remove("hidden");
+            displayPurchasedCharacters();
+        }
+
+        function displayPurchasedCharacters() {
+            characterButtons.innerHTML = ""; 
+            purchasedCharacters.forEach(character => {
+                const button = document.createElement("button");
+                button.textContent = character;
+                button.onclick = () => selectCharacter(character);
+                characterButtons.appendChild(button);
+            });
+        }
+
+        function selectCharacter(character) {
+            if (purchasedCharacters.includes(character)) {
+                selectedCharacter = character;
+                playerDamage = characterSettings[character].damage;
+                playerHP = characterSettings[character].hp;
+                updatePlayerHP();
+                characterSelection.classList.add("hidden");
+                mapSelection.classList.remove("hidden");
+                displayAvailableMaps();
+            } else {
+                alert(`Персонаж ${character} не куплен. Купите его в магазине.`);
+            }
+        }
+
+        function goToShop() {
+            menu.classList.add("hidden");
+            shop.classList.remove("hidden");
+        }
+
+        function buyCharacter(character, cost) {
+            if (purchasedCharacters.includes(character)) {
+                alert(`${character} уже куплен.`);
+            } else if (balance >= cost) {
+                balance -= cost;
+                purchasedCharacters.push(character);
+                updateBalance();
+                saveGameData();
+                alert(`${character} куплен!`);
+            } else {
+                alert("Недостаточно средств.");
+            }
+        }
+
+        function displayAvailableMaps() {
+            mapButtons.innerHTML = ""; 
+            Object.keys(maps).forEach(mapName => {
+                if (unlockedMaps.includes(mapName)) {
+                    const button = document.createElement("button");
+                    button.textContent = mapName;
+                    button.onclick = () => selectMap(mapName);
+                    mapButtons.appendChild(button);
+                }
+            });
+        }
+
+        function initEnemies(count) {
+            enemies = [];
+            for (let i = 0; i < count; i++) {
+                enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
+            }
+            monstersRemaining = count;
+            monsterCountDisplay.textContent = `Монстров: ${monstersRemaining}`;
+            monsterCountDisplay.classList.remove("hidden");
+            playerHPDisplay.classList.remove("hidden");
+        }
+
+        function selectMap(map) {
+            selectedMap = map; 
+            mapSelection.classList.add("hidden");
+            gameCanvas.classList.remove("hidden");
+            gameCanvas.style.display = "block";
+            totalMonsters = maps[map].totalEnemies;
+            monstersRemaining = totalMonsters;
+            initEnemies(15); 
+            isGameRunning = true;
+            gameLoop();
+        }
+
+        function endGame() {
+            isGameRunning = false;
+            gameCanvas.style.display = "none";
+            monsterCountDisplay.classList.add("hidden");
+            playerHPDisplay.classList.add("hidden");
+
+            if (playerHP > 0) {
+                balance += maps[selectedMap].reward;
+                updateBalance();
+                
+                if (selectedMap === "Первая карта" && !unlockedMaps.includes("Вторая карта")) {
+                    unlockedMaps.push("Вторая карта");
+                    alert("Поздравляем! Вторая карта теперь доступна.");
+                } else if (selectedMap === "Вторая карта" && !unlockedMaps.includes("Третья карта")) {
+                    unlockedMaps.push("Третья карта");
+                    alert("Поздравляем! Третья карта теперь доступна.");
+                }
+
+                saveGameData();
+                alert("Уровень завершен!");
+            } else {
+                alert("Игра окончена! Вы проиграли.");
+            }
+            goToCharacterSelection();
+        }
+
+        function backToMenu() {
+            characterSelection.classList.add("hidden");
+            mapSelection.classList.add("hidden");
+            shop.classList.add("hidden");
+            menu.classList.remove("hidden");
+        }
+
+        function backToCharacterSelection() {
+            mapSelection.classList.add("hidden");
+            characterSelection.classList.remove("hidden");
+        }
+
+        const player = { x: 400, y: 550, speed: 5 };
+        const keys = {};
+        let targetX = player.x;
+        let targetY = player.y;
+
+        window.addEventListener("keydown", (e) => {
+            keys[e.key] = true;
         });
-    };
-</script>
+
+        window.addEventListener("keyup", (e) => {
+            keys[e.key] = false;
+        });
+
+        function movePlayer() {
+            if (keys["ArrowUp"] && player.y > 0) player.y -= player.speed;
+            if (keys["ArrowDown"] && player.y < gameCanvas.height - 20) player.y += player.speed;
+            if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
+            if (keys["ArrowRight"] && player.x < gameCanvas.width - 20) player.x += player.speed;
+        }
+
+        gameCanvas.addEventListener("mousemove", (e) => {
+            const rect = gameCanvas.getBoundingClientRect();
+            targetX = e.clientX - rect.left;
+            targetY = e.clientY - rect.top;
+        });
+
+        gameCanvas.addEventListener("click", shoot);
+
+        function saveGameData() {
+            const gameData = {
+                balance,
+                purchasedCharacters,
+                unlockedMaps
+            };
+            localStorage.setItem(nickname, JSON.stringify(gameData));
+        }
+
+        function shoot() {
+            bullets.push({ x: player.x + 10, y: player.y, dx: 0, dy: 0 });
+        }
+
+        function gameLoop() {
+            if (!isGameRunning) return;
+
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            movePlayer();
+            updateBullets();
+            updateEnemies();
+            drawEntities();
+            if (playerHP > 0 && monstersRemaining > 0) {
+                requestAnimationFrame(gameLoop);
+            } else {
+                endGame();
+            }
+        }
+
+        function updateBullets() {
+            bullets.forEach((bullet, bulletIndex) => {
+                bullet.y -= 5; // направление выстрела вверх
+                if (bullet.y < 0) bullets.splice(bulletIndex, 1);
+            });
+        }
+
+        function updateEnemies() {
+            enemies.forEach((enemy, index) => {
+                ctx.fillStyle = "red";
+                ctx.fillRect(enemy.x, enemy.y, 20, 20);
+            });
+        }
+
+        function drawEntities() {
+            ctx.fillStyle = "blue";
+            ctx.fillRect(player.x, player.y, 20, 20);
+
+            bullets.forEach(bullet => {
+                ctx.fillStyle = "yellow";
+                ctx.fillRect(bullet.x, bullet.y, 5, 5);
+            });
+        }
+    </script>
 </body>
 </html>
-    
-    
-    
