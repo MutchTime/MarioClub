@@ -102,8 +102,6 @@
 
         // Инициализация игры
         function initializeGame() {
-            console.log("Кнопка 'Начать игру' нажата");
-
             nickname = nicknameInput.value.trim();
             if (!nickname) {
                 alert("Пожалуйста, введите никнейм!");
@@ -125,7 +123,6 @@
             nicknameScreen.classList.add("hidden");
             menu.classList.remove("hidden");
             balanceDisplay.classList.remove("hidden");
-            console.log("Игра инициализирована");
         }
 
         // Обновление баланса
@@ -135,24 +132,48 @@
 
         // Переход к выбору персонажа
         function goToCharacterSelection() {
-            console.log("Кнопка 'Играть' нажата");
             menu.classList.add("hidden");
             characterSelection.classList.remove("hidden");
         }
 
         // Переход к магазину
         function goToShop() {
-            console.log("Кнопка 'Магазин' нажата");
             menu.classList.add("hidden");
             shop.classList.remove("hidden");
         }
 
         // Переход назад в главное меню
         function backToMenu() {
+            console.log("Возвращение в главное меню"); // Отладка
             characterSelection.classList.add("hidden");
             shop.classList.add("hidden");
             menu.classList.remove("hidden");
-            console.log("Возвращение в главное меню");
+        }
+
+        // Покупка персонажа
+        function buyCharacter(character, cost) {
+            console.log(`Попытка покупки персонажа ${character} за ${cost} руб.`); // Отладка
+            if (purchasedCharacters.includes(character)) {
+                alert(`${character} уже куплен.`);
+            } else if (balance >= cost) {
+                balance -= cost;
+                purchasedCharacters.push(character);
+                updateBalance();
+                saveGameData();
+                alert(`${character} куплен!`);
+            } else {
+                alert("Недостаточно средств.");
+            }
+        }
+
+        // Сохранение данных
+        function saveGameData() {
+            const gameData = {
+                balance,
+                purchasedCharacters,
+                unlockedMaps
+            };
+            localStorage.setItem(nickname, JSON.stringify(gameData));
         }
     </script>
 </body>
