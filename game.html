@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Начальное меню игры</title>
+    <title>Меню игры с выбором персонажа и карты</title>
     <style>
         body, html {
             margin: 0;
@@ -20,13 +20,13 @@
             display: none;
         }
 
-        #menu, #settings {
+        #menu, #characterSelection, #mapSelection {
             text-align: center;
             color: white;
         }
 
-        #menu h1 {
-            font-size: 48px;
+        h1, h2 {
+            font-size: 36px;
             margin-bottom: 20px;
         }
 
@@ -52,17 +52,26 @@
     </style>
 </head>
 <body>
-    <!-- Начальное меню -->
+    <!-- Главное меню -->
     <div id="menu">
         <h1>Моя Игра</h1>
-        <button onclick="startGame()">Играть</button>
-        <button onclick="openSettings()">Настройки</button>
+        <button onclick="goToCharacterSelection()">Играть</button>
     </div>
 
-    <!-- Меню настроек -->
-    <div id="settings" class="hidden">
-        <h2>Настройки</h2>
-        <button onclick="closeSettings()">Назад</button>
+    <!-- Меню выбора персонажа -->
+    <div id="characterSelection" class="hidden">
+        <h2>Выберите персонажа</h2>
+        <button onclick="selectCharacter('Воин')">Воин</button>
+        <button onclick="selectCharacter('Маг')">Маг</button>
+        <button onclick="selectCharacter('Лучник')">Лучник</button>
+    </div>
+
+    <!-- Меню выбора карты -->
+    <div id="mapSelection" class="hidden">
+        <h2>Выберите карту</h2>
+        <button onclick="selectMap('Лес')">Лес</button>
+        <button onclick="selectMap('Пустыня')">Пустыня</button>
+        <button onclick="selectMap('Горы')">Горы</button>
     </div>
 
     <!-- Игровой канвас -->
@@ -71,44 +80,55 @@
     <script>
         // Получаем элементы из HTML
         const menu = document.getElementById("menu");
-        const settings = document.getElementById("settings");
+        const characterSelection = document.getElementById("characterSelection");
+        const mapSelection = document.getElementById("mapSelection");
         const gameCanvas = document.getElementById("gameCanvas");
         const ctx = gameCanvas.getContext("2d");
 
-        // Функция запуска игры
+        let selectedCharacter = null;
+        let selectedMap = null;
+
+        // Переход к выбору персонажа
+        function goToCharacterSelection() {
+            menu.classList.add("hidden");
+            characterSelection.classList.remove("hidden");
+        }
+
+        // Выбор персонажа
+        function selectCharacter(character) {
+            selectedCharacter = character;
+            characterSelection.classList.add("hidden");
+            mapSelection.classList.remove("hidden"); // Переходим к выбору карты
+        }
+
+        // Выбор карты
+        function selectMap(map) {
+            selectedMap = map;
+            mapSelection.classList.add("hidden");
+            gameCanvas.classList.remove("hidden"); // Переходим к игровому экрану
+            startGame();
+        }
+
+        // Запуск игры
         function startGame() {
-            menu.classList.add("hidden");  // Скрываем меню
-            gameCanvas.classList.remove("hidden");  // Показываем канвас
-            initGame();  // Инициализация игры
-        }
-
-        // Функция для открытия настроек
-        function openSettings() {
-            menu.classList.add("hidden");  // Скрываем меню
-            settings.classList.remove("hidden");  // Показываем настройки
-        }
-
-        // Функция для закрытия настроек и возврата в меню
-        function closeSettings() {
-            settings.classList.add("hidden");  // Скрываем настройки
-            menu.classList.remove("hidden");  // Показываем меню
+            initGame();
         }
 
         // Инициализация игры
         function initGame() {
             ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);  // Очистка экрана
-            // Здесь можно добавить код для старта игрового цикла, например, gameLoop()
+            console.log("Игра началась с персонажем:", selectedCharacter, "и картой:", selectedMap);
             gameLoop();
         }
 
         // Пример игрового цикла
         function gameLoop() {
             ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);  // Очистка экрана
-            // Здесь будет отрисовка и логика игры
-
-            // Пример: нарисуем простую фигуру
-            ctx.fillStyle = "red";
-            ctx.fillRect(50, 50, 100, 100);
+            // Пример: нарисуем выбранного персонажа (здесь это просто текст)
+            ctx.fillStyle = "white";
+            ctx.font = "24px Arial";
+            ctx.fillText(`Персонаж: ${selectedCharacter}`, 50, 50);
+            ctx.fillText(`Карта: ${selectedMap}`, 50, 80);
 
             // Продолжаем игровой цикл
             requestAnimationFrame(gameLoop);
