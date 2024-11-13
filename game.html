@@ -399,6 +399,34 @@
             mapSelection.classList.add("hidden");
             characterSelection.classList.remove("hidden");
         }
+        function endGame() {
+    isGameRunning = false;
+    gameCanvas.style.display = "none";
+    monsterCountDisplay.classList.add("hidden");
+    playerHPDisplay.classList.add("hidden");
+    
+    if (playerHP > 0) {
+        balance += maps[selectedMap].reward;
+        updateBalance();
+
+        // Разблокируем следующую карту
+        if (selectedMap === "Первая карта" && !unlockedMaps.includes("Вторая карта")) {
+            unlockedMaps.push("Вторая карта");
+            alert("Вторая карта разблокирована!");
+        } else if (selectedMap === "Вторая карта" && !unlockedMaps.includes("Третья карта")) {
+            unlockedMaps.push("Третья карта");
+            alert("Третья карта разблокирована!");
+        }
+
+        saveGameData();
+        alert("Уровень завершен!");
+    } else {
+        alert("Игра окончена! Вы проиграли.");
+    }
+
+    goToCharacterSelection();
+}
+
 
         const player = { x: 400, y: 550, speed: 5 };
         const keys = {};
