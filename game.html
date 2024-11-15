@@ -12,7 +12,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-             background-image: url('https://i.pinimg.com/originals/45/d0/79/45d0790c293e5dba3077f4ad0c4826c6.gif');
+            background-image: url('https://i.pinimg.com/originals/45/d0/79/45d0790c293e5dba3077f4ad0c4826c6.gif');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -82,37 +82,29 @@
     </style>
 </head>
 <body>
-    <!-- Экран ввода никнейма -->
     <div id="nicknameScreen">
         <h2>Введите свой никнейм:</h2>
         <input type="text" id="nicknameInput" placeholder="Никнейм">
         <button onclick="initializeGame()">Начать игру</button>
         <button onclick="window.location.href='index.html'">Главная</button>
-         
     </div>
 
-    <!-- Отображение баланса и здоровья игрока -->
     <div id="balance" class="hidden">Баланс: 500 руб.</div>
     <div id="playerHP" class="hidden">HP: 0</div>
-
-    <!-- Отображение количества монстров -->
     <div id="monsterCount" class="hidden">Монстров: 0</div>
 
-    <!-- Главное меню -->
     <div id="menu" class="hidden">
         <h1>Моя Игра</h1>
         <button onclick="goToCharacterSelection()">Играть</button>
         <button onclick="goToShop()">Магазин</button>
     </div>
 
-    <!-- Меню выбора персонажа -->
     <div id="characterSelection" class="hidden">
         <h2>Выберите персонажа</h2>
         <div id="characterButtons"></div>
         <button onclick="backToMenu()">Назад</button>
     </div>
 
-    <!-- Магазин -->
     <div id="shop" class="hidden">
         <h2>Магазин</h2>
         <p>Купите персонажа:</p>
@@ -122,14 +114,12 @@
         <button onclick="backToMenu()">Назад</button>
     </div>
 
-    <!-- Меню выбора карты -->
     <div id="mapSelection" class="hidden">
         <h2>Выберите карту</h2>
         <div id="mapButtons"></div>
         <button onclick="backToCharacterSelection()">Назад</button>
     </div>
 
-    <!-- Игровой канвас -->
     <canvas id="gameCanvas" width="1366" height="768"></canvas>
 
     <script>
@@ -159,11 +149,11 @@
         let monstersRemaining = 0;
         let totalMonsters = 0;
         let isGameRunning = false;
-        let selectedMap = ""; // Variable to track selected map
+        let selectedMap = ""; 
 
         const characterSettings = {
             "Салага": { damage: 50, hp: 50 },
-            "Солдат": { damage: 75, hp: 75 },
+            "Солдат": { damage: 50, hp: 75 },
             "Маг": { damage: 100, hp: 100 }
         };
 
@@ -173,6 +163,8 @@
             "Третья карта": { reward: 500, totalEnemies: 135 }
         };
 
+        const player = { x: 400, y: 550, speed: 5 };
+        
         function initializeGame() {
             nickname = nicknameInput.value.trim();
             if (!nickname) {
@@ -266,24 +258,40 @@
             });
         }
 
-        function initEnemies(count) {
+        function initEnemies() {
             enemies = [];
-            for (let i = 0; i < count; i++) {
-                enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
+            
+            // Спавн 7 монстров с левой стороны стенки
+            for (let i = 0; i < 7; i++) {
+                enemies.push({
+                    x: 50, // координата X рядом со стеной
+                    y: 100 + i * 80, // координаты Y с интервалом для распределения
+                    hp: 200
+                });
             }
-            monstersRemaining = count;
-            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
+
+            // Спавн 7 монстров с правой стороны стенки
+            for (let i = 0; i < 7; i++) {
+                enemies.push({
+                    x: gameCanvas.width - 70, // координата X рядом со стеной
+                    y: 100 + i * 80, // координаты Y с интервалом для распределения
+                    hp: 200
+                });
+            }
+
+            monstersRemaining = enemies.length;
+            monsterCountDisplay.textContent = `Монстров: ${monstersRemaining}`;
             monsterCountDisplay.classList.remove("hidden");
             playerHPDisplay.classList.remove("hidden");
         }
 
         function selectMap(map) {
-            selectedMap = map; // Track the current map
+            selectedMap = map;
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden");
             gameCanvas.style.display = "block";
             totalMonsters = maps[map].totalEnemies;
-            initEnemies(15); // Спавн начальных 15 монстров
+            initEnemies(); 
             isGameRunning = true;
             gameLoop();
         }
@@ -315,16 +323,67 @@
                         if (enemy.hp <= 0) {
                             enemies.splice(enemyIndex, 1);
                             monstersRemaining--;
-                            monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
-
-                            if (monstersRemaining === 0 && totalMonsters > 0) {
-                                const remainingMonsters = Math.min(15, totalMonsters - monstersRemaining);
-                                initEnemies(remainingMonsters);
-                                totalMonsters -= remainingMonsters;
-                            }
+                            monsterCountDisplay.textContent = `Монстров: ${monstersRemaining}`;
                         }
                     }
                 });
+            });
+        }
+
+        function drawEntities() {
+            ctx.fillStyle = "blue";
+            ctx.fillRect(player.x, player.y, 20, 20);
+            ctx.fillStyle = "yellow";
+            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
+            ctx.fillStyle = "red";
+            enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
+        }
+
+        function gameLoop() {
+            if (!isGameRunning) return;
+
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            movePlayer();
+            updateBullets();
+            updateEnemies();
+            drawEntities();
+            if (playerHP > 0 && (monstersRemaining > 0 || totalMonsters > 0)) {
+                requestAnimationFrame(gameLoop);
+            } else {
+                endGame();
+            }
+        }
+
+        function movePlayer() {
+            if (keys["ArrowUp"] && player.y > 0) player.y -= player.speed;
+            if (keys["ArrowDown"] && player.y < gameCanvas.height - 20) player.y += player.speed;
+            if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
+            if (keys["ArrowRight"] && player.x < gameCanvas.width - 20) player.x += player.speed;
+        }
+
+        const keys = {};
+        window.addEventListener("keydown", (e) => {
+            keys[e.key] = true;
+        });
+
+        window.addEventListener("keyup", (e) => {
+            keys[e.key] = false;
+        });
+
+        gameCanvas.addEventListener("mousemove", (e) => {
+            const rect = gameCanvas.getBoundingClientRect();
+            targetX = e.clientX - rect.left;
+            targetY = e.clientY - rect.top;
+        });
+
+        gameCanvas.addEventListener("click", shoot);
+
+        function shoot() {
+            bullets.push({
+                x: player.x + 10,
+                y: player.y,
+                dx: 0,
+                dy: 0
             });
         }
 
@@ -347,39 +406,6 @@
                     }
                 }
             });
-        }
-
-        function shoot() {
-            bullets.push({
-                x: player.x + 10,
-                y: player.y,
-                dx: 0,
-                dy: 0
-            });
-        }
-
-        function gameLoop() {
-            if (!isGameRunning) return;
-
-            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-            movePlayer();
-            updateBullets();
-            updateEnemies();
-            drawEntities();
-            if (playerHP > 0 && (monstersRemaining > 0 || totalMonsters > 0)) {
-                requestAnimationFrame(gameLoop);
-            } else {
-                endGame();
-            }
-        }
-
-        function drawEntities() {
-            ctx.fillStyle = "blue";
-            ctx.fillRect(player.x, player.y, 20, 20);
-            ctx.fillStyle = "yellow";
-            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
-            ctx.fillStyle = "red";
-            enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
         }
 
         function endGame() {
@@ -410,6 +436,15 @@
             }
         }
 
+        function saveGameData() {
+            const gameData = {
+                balance,
+                purchasedCharacters,
+                unlockedMaps
+            };
+            localStorage.setItem(nickname, JSON.stringify(gameData));
+        }
+
         function backToMenu() {
             characterSelection.classList.add("hidden");
             mapSelection.classList.add("hidden");
@@ -420,43 +455,6 @@
         function backToCharacterSelection() {
             mapSelection.classList.add("hidden");
             characterSelection.classList.remove("hidden");
-        }
-
-        const player = { x: 400, y: 550, speed: 5 };
-        const keys = {};
-        let targetX = player.x;
-        let targetY = player.y;
-
-        window.addEventListener("keydown", (e) => {
-            keys[e.key] = true;
-        });
-
-        window.addEventListener("keyup", (e) => {
-            keys[e.key] = false;
-        });
-
-        function movePlayer() {
-            if (keys["ArrowUp"] && player.y > 0) player.y -= player.speed;
-            if (keys["ArrowDown"] && player.y < gameCanvas.height - 20) player.y += player.speed;
-            if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
-            if (keys["ArrowRight"] && player.x < gameCanvas.width - 20) player.x += player.speed;
-        }
-
-        gameCanvas.addEventListener("mousemove", (e) => {
-            const rect = gameCanvas.getBoundingClientRect();
-            targetX = e.clientX - rect.left;
-            targetY = e.clientY - rect.top;
-        });
-
-        gameCanvas.addEventListener("click", shoot);
-
-        function saveGameData() {
-            const gameData = {
-                balance,
-                purchasedCharacters,
-                unlockedMaps
-            };
-            localStorage.setItem(nickname, JSON.stringify(gameData));
         }
     </script>
 </body>
