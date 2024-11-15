@@ -162,9 +162,9 @@
         };
 
         const maps = {
-            "Первая карта": { reward: 100, totalEnemies: 45 },
-            "Вторая карта": { reward: 300, totalEnemies: 90 },
-            "Третья карта": { reward: 500, totalEnemies: 135 }
+            "Первая карта": { reward: 100, baseEnemyCountMultiplier: 1 },
+            "Вторая карта": { reward: 300, baseEnemyCountMultiplier: 2 },
+            "Третья карта": { reward: 500, baseEnemyCountMultiplier: 4 }
         };
 
         const player = { x: 400, y: 550, speed: 5 };
@@ -268,8 +268,8 @@
             
             // Спавн монстров с левой и правой сторон
             for (let i = 0; i < enemyCount; i++) {
-                const side = i % 2 === 0 ? 50 : gameCanvas.width - 70; // Лево или право
-                const yPosition = 100 + (i % 7) * 80; // Распределение по высоте
+                const side = i % 2 === 0 ? 50 : gameCanvas.width - 70;
+                const yPosition = 100 + (i % 7) * 80;
                 enemies.push({
                     x: side,
                     y: yPosition,
@@ -286,10 +286,10 @@
         function selectMap(map) {
             selectedMap = map;
             currentStage = 1;
+            baseEnemyCount = 7 * maps[map].baseEnemyCountMultiplier;
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden");
             gameCanvas.style.display = "block";
-            totalMonsters = maps[map].totalEnemies;
             initEnemies(); 
             isGameRunning = true;
             gameLoop();
@@ -347,17 +347,15 @@
             updateEnemies();
             drawEntities();
             
-            // Проверка на конец этапа
             if (monstersRemaining <= 0) {
                 if (currentStage < totalStages) {
                     currentStage++;
-                    initEnemies(); // Начать следующий этап с увеличением количества монстров
+                    initEnemies();
                 } else {
-                    endGame(); // Все этапы завершены, завершить игру
+                    endGame();
                 }
             }
 
-            // Проверка на поражение игрока
             if (playerHP <= 0) {
                 endGame();
             } else {
