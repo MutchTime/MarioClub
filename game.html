@@ -12,7 +12,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-image: url('https://i.pinimg.com/originals/45/d0/79/45d0790c293e5dba3077f4ad0c4826c6.gif');
+             background-image: url('https://i.pinimg.com/originals/45/d0/79/45d0790c293e5dba3077f4ad0c4826c6.gif');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -82,28 +82,37 @@
     </style>
 </head>
 <body>
+    <!-- Экран ввода никнейма -->
     <div id="nicknameScreen">
         <h2>Введите свой никнейм:</h2>
         <input type="text" id="nicknameInput" placeholder="Никнейм">
         <button onclick="initializeGame()">Начать игру</button>
         <button onclick="window.location.href='index.html'">Главная</button>
+         
     </div>
 
+    <!-- Отображение баланса и здоровья игрока -->
     <div id="balance" class="hidden">Баланс: 500 руб.</div>
     <div id="playerHP" class="hidden">HP: 0</div>
+
+    <!-- Отображение количества монстров -->
     <div id="monsterCount" class="hidden">Монстров: 0</div>
+
+    <!-- Главное меню -->
     <div id="menu" class="hidden">
         <h1>Моя Игра</h1>
         <button onclick="goToCharacterSelection()">Играть</button>
         <button onclick="goToShop()">Магазин</button>
     </div>
 
+    <!-- Меню выбора персонажа -->
     <div id="characterSelection" class="hidden">
         <h2>Выберите персонажа</h2>
         <div id="characterButtons"></div>
         <button onclick="backToMenu()">Назад</button>
     </div>
 
+    <!-- Магазин -->
     <div id="shop" class="hidden">
         <h2>Магазин</h2>
         <p>Купите персонажа:</p>
@@ -113,18 +122,17 @@
         <button onclick="backToMenu()">Назад</button>
     </div>
 
+    <!-- Меню выбора карты -->
     <div id="mapSelection" class="hidden">
         <h2>Выберите карту</h2>
         <div id="mapButtons"></div>
         <button onclick="backToCharacterSelection()">Назад</button>
     </div>
 
+    <!-- Игровой канвас -->
     <canvas id="gameCanvas" width="1366" height="768"></canvas>
 
     <script>
-        const playerImage = new Image();
-        playerImage.src = 'https://example.com/player.png'; // Укажите URL вашего изображения
-
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
         const characterSelection = document.getElementById("characterSelection");
@@ -151,7 +159,7 @@
         let monstersRemaining = 0;
         let totalMonsters = 0;
         let isGameRunning = false;
-        let selectedMap = "";
+        let selectedMap = ""; // Variable to track selected map
 
         const characterSettings = {
             "Салага": { damage: 50, hp: 50 },
@@ -164,8 +172,6 @@
             "Вторая карта": { reward: 300, totalEnemies: 90 },
             "Третья карта": { reward: 500, totalEnemies: 135 }
         };
-
-        const player = { x: 400, y: 550, speed: 5 };
 
         function initializeGame() {
             nickname = nicknameInput.value.trim();
@@ -263,7 +269,7 @@
         function initEnemies(count) {
             enemies = [];
             for (let i = 0; i < count; i++) {
-                enemies.push({ x: Math.random() * gameCanvas.width, y: Math.random() * gameCanvas.height, hp: 200 });
+                enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
             }
             monstersRemaining = count;
             monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
@@ -272,12 +278,12 @@
         }
 
         function selectMap(map) {
-            selectedMap = map;
+            selectedMap = map; // Track the current map
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden");
             gameCanvas.style.display = "block";
             totalMonsters = maps[map].totalEnemies;
-            initEnemies(15);
+            initEnemies(15); // Спавн начальных 15 монстров
             isGameRunning = true;
             gameLoop();
         }
@@ -368,16 +374,10 @@
         }
 
         function drawEntities() {
-            if (playerImage.complete) {
-                ctx.drawImage(playerImage, player.x, player.y, 20, 20);
-            } else {
-                ctx.fillStyle = "blue";
-                ctx.fillRect(player.x, player.y, 20, 20);
-            }
-
+            ctx.fillStyle = "blue";
+            ctx.fillRect(player.x, player.y, 20, 20);
             ctx.fillStyle = "yellow";
             bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
-
             ctx.fillStyle = "red";
             enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
         }
@@ -422,6 +422,7 @@
             characterSelection.classList.remove("hidden");
         }
 
+        const player = { x: 400, y: 550, speed: 5 };
         const keys = {};
         let targetX = player.x;
         let targetY = player.y;
