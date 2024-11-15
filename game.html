@@ -179,6 +179,8 @@
                 alert("Пожалуйста, введите никнейм!");
                 return;
             }
+            const playerImage = new Image();
+            playerImage.src = 'https://example.com/player.png';
 
             const savedData = localStorage.getItem(nickname);
             if (savedData) {
@@ -374,13 +376,22 @@
         }
 
         function drawEntities() {
-            ctx.fillStyle = "blue";
-            ctx.fillRect(player.x, player.y, 20, 20);
-            ctx.fillStyle = "yellow";
-            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
-            ctx.fillStyle = "red";
-            enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
-        }
+            if (playerImage.complete) {
+        // Используем изображение вместо цвета для игрока
+        ctx.drawImage(playerImage, player.x, player.y, 20, 20); // Настройте ширину и высоту по необходимости
+    } else {
+        // Пока изображение не загружено, можно временно использовать заливку
+        ctx.fillStyle = "blue";
+        ctx.fillRect(player.x, player.y, 20, 20);
+    }
+
+    // Оставляем остальной код для пуль и врагов
+    ctx.fillStyle = "yellow";
+    bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
+
+    ctx.fillStyle = "red";
+    enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
+}
 
         function endGame() {
             isGameRunning = false;
