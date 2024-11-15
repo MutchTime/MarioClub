@@ -180,7 +180,7 @@
                 return;
             }
             const playerImage = new Image();
-            playerImage.src = 'https://example.com/player.png';
+            playerImage.src = 'https://png.klev.club/uploads/posts/2024-06/png-klev-club-6ajg-p-golova-mainkraft-png-16.png';
 
             const savedData = localStorage.getItem(nickname);
             if (savedData) {
@@ -377,15 +377,15 @@
 
         function drawEntities() {
             if (playerImage.complete) {
-        // Используем изображение вместо цвета для игрока
+       
         ctx.drawImage(playerImage, player.x, player.y, 20, 20); // Настройте ширину и высоту по необходимости
     } else {
-        // Пока изображение не загружено, можно временно использовать заливку
+        // Пока изображение не загружено,временно использовать заливку
         ctx.fillStyle = "blue";
         ctx.fillRect(player.x, player.y, 20, 20);
     }
 
-    // Оставляем остальной код для пуль и врагов
+    
     ctx.fillStyle = "yellow";
     bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
 
