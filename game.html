@@ -263,7 +263,7 @@
         function initEnemies(count) {
             enemies = [];
             for (let i = 0; i < count; i++) {
-                enemies.push({ x: Math.random() * 780, y: Math.random() * 580, hp: 200 });
+                enemies.push({ x: Math.random() * gameCanvas.width, y: Math.random() * gameCanvas.height, hp: 200 });
             }
             monstersRemaining = count;
             monsterCountDisplay.textContent = `Монстров: ${totalMonsters - monstersRemaining}`;
