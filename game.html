@@ -266,7 +266,6 @@
             enemies = [];
             let enemyCount = Math.floor(baseEnemyCount * Math.pow(1.5, currentStage - 1));
             
-            // Спавн монстров с левой и правой сторон
             for (let i = 0; i < enemyCount; i++) {
                 const side = i % 2 === 0 ? 50 : gameCanvas.width - 70;
                 const yPosition = 100 + (i % 7) * 80;
@@ -398,10 +397,18 @@
 
         function updateEnemies() {
             enemies.forEach((enemy) => {
+                // Рассчитываем угол к игроку
                 const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
-                enemy.x += Math.cos(angle);
-                enemy.y += Math.sin(angle);
 
+                // Добавляем случайное отклонение в пределах -0.1 до 0.1 радиан
+                const randomOffset = (Math.random() - 0.5) * 0.2;
+                const adjustedAngle = angle + randomOffset;
+
+                // Двигаем монстра в направлении с учетом случайного отклонения
+                enemy.x += Math.cos(adjustedAngle);
+                enemy.y += Math.sin(adjustedAngle);
+
+                // Проверяем столкновение с игроком
                 if (
                     player.x < enemy.x + 20 &&
                     player.x + 20 > enemy.x &&
