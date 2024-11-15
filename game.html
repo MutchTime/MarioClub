@@ -167,7 +167,8 @@
             "Третья карта": { reward: 500, baseEnemyCountMultiplier: 4 }
         };
 
-        const player = { x: 400, y: 550, speed: 5 };
+        // Устанавливаем начальное положение игрока в центре карты
+        const player = { x: gameCanvas.width / 2, y: gameCanvas.height / 2, speed: 5 };
         
         function initializeGame() {
             nickname = nicknameInput.value.trim();
@@ -289,6 +290,11 @@
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden");
             gameCanvas.style.display = "block";
+
+            // Устанавливаем игрока в центр карты
+            player.x = gameCanvas.width / 2;
+            player.y = gameCanvas.height / 2;
+
             initEnemies(); 
             isGameRunning = true;
             gameLoop();
@@ -397,31 +403,24 @@
 
         function updateEnemies() {
             enemies.forEach((enemy, i) => {
-                // Рассчитываем угол к игроку
                 const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
-
-                // Добавляем случайное отклонение в пределах -0.1 до 0.1 радиан
                 const randomOffset = (Math.random() - 0.5) * 0.2;
                 const adjustedAngle = angle + randomOffset;
-
-                // Двигаем монстра в направлении с учетом случайного отклонения
                 enemy.x += Math.cos(adjustedAngle);
                 enemy.y += Math.sin(adjustedAngle);
 
-                // Проверяем столкновение с другими монстрами и отталкиваемся, если они слишком близко
                 enemies.forEach((otherEnemy, j) => {
                     if (i !== j) {
                         const dx = enemy.x - otherEnemy.x;
                         const dy = enemy.y - otherEnemy.y;
                         const distance = Math.sqrt(dx * dx + dy * dy);
-                        if (distance < 20) { // минимальное расстояние между монстрами
+                        if (distance < 20) {
                             enemy.x += dx / distance;
                             enemy.y += dy / distance;
                         }
                     }
                 });
 
-                // Проверяем столкновение с игроком
                 if (
                     player.x < enemy.x + 20 &&
                     player.x + 20 > enemy.x &&
