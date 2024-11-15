@@ -167,7 +167,6 @@
             "Третья карта": { reward: 500, baseEnemyCountMultiplier: 4 }
         };
 
-        // Устанавливаем начальное положение игрока в центре карты
         const player = { x: gameCanvas.width / 2, y: gameCanvas.height / 2, speed: 5 };
         
         function initializeGame() {
@@ -266,13 +265,32 @@
         function initEnemies() {
             enemies = [];
             let enemyCount = Math.floor(baseEnemyCount * Math.pow(1.5, currentStage - 1));
-            
+
             for (let i = 0; i < enemyCount; i++) {
-                const side = i % 2 === 0 ? 50 : gameCanvas.width - 70;
-                const yPosition = 100 + (i % 7) * 80;
+                let spawnSide = Math.floor(Math.random() * 4); // 0: left, 1: right, 2: top, 3: bottom
+                let x, y;
+
+                if (spawnSide === 0) {
+                    // Слева за картой
+                    x = -30;
+                    y = Math.random() * gameCanvas.height;
+                } else if (spawnSide === 1) {
+                    // Справа за картой
+                    x = gameCanvas.width + 30;
+                    y = Math.random() * gameCanvas.height;
+                } else if (spawnSide === 2) {
+                    // Сверху за картой
+                    x = Math.random() * gameCanvas.width;
+                    y = -30;
+                } else {
+                    // Снизу за картой
+                    x = Math.random() * gameCanvas.width;
+                    y = gameCanvas.height + 30;
+                }
+
                 enemies.push({
-                    x: side,
-                    y: yPosition,
+                    x: x,
+                    y: y,
                     hp: 200
                 });
             }
@@ -300,47 +318,41 @@
             gameLoop();
         }
 
-        function updateBullets() {
-            bullets.forEach((bullet, bulletIndex) => {
-                const angle = Math.atan2(targetY - bullet.y, targetX - bullet.x);
-                const speed = 5;
-                bullet.dx = Math.cos(angle) * speed;
-                bullet.dy = Math.sin(angle) * speed;
+        function updateEnemies() {
+            enemies.forEach((enemy, i) => {
+                const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+                const randomOffset = (Math.random() - 0.5) * 0.2;
+                const adjustedAngle = angle + randomOffset;
 
-                bullet.x += bullet.dx;
-                bullet.y += bullet.dy;
+                // Движение монстра в направлении игрока
+                enemy.x += Math.cos(adjustedAngle);
+                enemy.y += Math.sin(adjustedAngle);
 
-                if (bullet.x < 0 || bullet.x > gameCanvas.width || bullet.y < 0 || bullet.y > gameCanvas.height) {
-                    bullets.splice(bulletIndex, 1);
-                    return;
-                }
-
-                enemies.forEach((enemy, enemyIndex) => {
-                    if (
-                        bullet.x < enemy.x + 20 &&
-                        bullet.x + 5 > enemy.x &&
-                        bullet.y < enemy.y + 20 &&
-                        bullet.y + 5 > enemy.y
-                    ) {
-                        enemy.hp -= playerDamage;
-                        bullets.splice(bulletIndex, 1);
-                        if (enemy.hp <= 0) {
-                            enemies.splice(enemyIndex, 1);
-                            monstersRemaining--;
-                            monsterCountDisplay.textContent = `Монстров: ${monstersRemaining}`;
+                enemies.forEach((otherEnemy, j) => {
+                    if (i !== j) {
+                        const dx = enemy.x - otherEnemy.x;
+                        const dy = enemy.y - otherEnemy.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < 20) {
+                            enemy.x += dx / distance;
+                            enemy.y += dy / distance;
                         }
                     }
                 });
-            });
-        }
 
-        function drawEntities() {
-            ctx.fillStyle = "blue";
-            ctx.fillRect(player.x, player.y, 20, 20);
-            ctx.fillStyle = "yellow";
-            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
-            ctx.fillStyle = "red";
-            enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
+                if (
+                    player.x < enemy.x + 20 &&
+                    player.x + 20 > enemy.x &&
+                    player.y < enemy.y + 20 &&
+                    player.y + 20 > enemy.y
+                ) {
+                    playerHP -= 5;
+                    updatePlayerHP();
+                    if (playerHP <= 0) {
+                        endGame();
+                    }
+                }
+            });
         }
 
         function gameLoop() {
@@ -401,39 +413,13 @@
             });
         }
 
-        function updateEnemies() {
-            enemies.forEach((enemy, i) => {
-                const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
-                const randomOffset = (Math.random() - 0.5) * 0.2;
-                const adjustedAngle = angle + randomOffset;
-                enemy.x += Math.cos(adjustedAngle);
-                enemy.y += Math.sin(adjustedAngle);
-
-                enemies.forEach((otherEnemy, j) => {
-                    if (i !== j) {
-                        const dx = enemy.x - otherEnemy.x;
-                        const dy = enemy.y - otherEnemy.y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        if (distance < 20) {
-                            enemy.x += dx / distance;
-                            enemy.y += dy / distance;
-                        }
-                    }
-                });
-
-                if (
-                    player.x < enemy.x + 20 &&
-                    player.x + 20 > enemy.x &&
-                    player.y < enemy.y + 20 &&
-                    player.y + 20 > enemy.y
-                ) {
-                    playerHP -= 5;
-                    updatePlayerHP();
-                    if (playerHP <= 0) {
-                        endGame();
-                    }
-                }
-            });
+        function drawEntities() {
+            ctx.fillStyle = "blue";
+            ctx.fillRect(player.x, player.y, 20, 20);
+            ctx.fillStyle = "yellow";
+            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
+            ctx.fillStyle = "red";
+            enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
         }
 
         function endGame() {
