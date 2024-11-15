@@ -149,7 +149,7 @@
         let monstersRemaining = 0;
         let totalMonsters = 0;
         let isGameRunning = false;
-        let selectedMap = ""; 
+        let selectedMap = "";
 
         const characterSettings = {
             "Салага": { damage: 50, hp: 50 },
@@ -264,8 +264,8 @@
             // Спавн 7 монстров с левой стороны стенки
             for (let i = 0; i < 7; i++) {
                 enemies.push({
-                    x: 50, // координата X рядом со стеной
-                    y: 100 + i * 80, // координаты Y с интервалом для распределения
+                    x: 50,
+                    y: 100 + i * 80,
                     hp: 200
                 });
             }
@@ -273,8 +273,8 @@
             // Спавн 7 монстров с правой стороны стенки
             for (let i = 0; i < 7; i++) {
                 enemies.push({
-                    x: gameCanvas.width - 70, // координата X рядом со стеной
-                    y: 100 + i * 80, // координаты Y с интервалом для распределения
+                    x: gameCanvas.width - 70,
+                    y: 100 + i * 80,
                     hp: 200
                 });
             }
@@ -347,10 +347,12 @@
             updateBullets();
             updateEnemies();
             drawEntities();
-            if (playerHP > 0 && (monstersRemaining > 0 || totalMonsters > 0)) {
-                requestAnimationFrame(gameLoop);
-            } else {
+            
+            // Проверка на конец игры: если игрок побежден или все монстры уничтожены
+            if (playerHP <= 0 || monstersRemaining <= 0) {
                 endGame();
+            } else {
+                requestAnimationFrame(gameLoop);
             }
         }
 
