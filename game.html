@@ -12,7 +12,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-             background-image: url('https://i.pinimg.com/originals/45/d0/79/45d0790c293e5dba3077f4ad0c4826c6.gif');
+            background-image: url('https://i.pinimg.com/originals/45/d0/79/45d0790c293e5dba3077f4ad0c4826c6.gif');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -88,7 +88,6 @@
         <input type="text" id="nicknameInput" placeholder="Никнейм">
         <button onclick="initializeGame()">Начать игру</button>
         <button onclick="window.location.href='index.html'">Главная</button>
-         
     </div>
 
     <!-- Отображение баланса и здоровья игрока -->
@@ -133,6 +132,9 @@
     <canvas id="gameCanvas" width="1366" height="768"></canvas>
 
     <script>
+        const playerImage = new Image();
+        playerImage.src = 'https://example.com/player.png'; // Укажите URL вашего изображения
+
         const nicknameScreen = document.getElementById("nicknameScreen");
         const menu = document.getElementById("menu");
         const characterSelection = document.getElementById("characterSelection");
@@ -179,8 +181,6 @@
                 alert("Пожалуйста, введите никнейм!");
                 return;
             }
-            const playerImage = new Image();
-            playerImage.src = 'https://png.klev.club/uploads/posts/2024-06/png-klev-club-6ajg-p-golova-mainkraft-png-16.png';
 
             const savedData = localStorage.getItem(nickname);
             if (savedData) {
@@ -280,12 +280,12 @@
         }
 
         function selectMap(map) {
-            selectedMap = map; // Track the current map
+            selectedMap = map;
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden");
             gameCanvas.style.display = "block";
             totalMonsters = maps[map].totalEnemies;
-            initEnemies(15); // Спавн начальных 15 монстров
+            initEnemies(15);
             isGameRunning = true;
             gameLoop();
         }
@@ -376,22 +376,22 @@
         }
 
         function drawEntities() {
+            // Рисуем игрока с изображением
             if (playerImage.complete) {
-       
-        ctx.drawImage(playerImage, player.x, player.y, 20, 20); // Настройте ширину и высоту по необходимости
-    } else {
-        // Пока изображение не загружено,временно использовать заливку
-        ctx.fillStyle = "blue";
-        ctx.fillRect(player.x, player.y, 20, 20);
-    }
+                ctx.drawImage(playerImage, player.x, player.y, 20, 20);
+            } else {
+                ctx.fillStyle = "blue";
+                ctx.fillRect(player.x, player.y, 20, 20);
+            }
 
-    
-    ctx.fillStyle = "yellow";
-    bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
+            // Рисуем пули
+            ctx.fillStyle = "yellow";
+            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
 
-    ctx.fillStyle = "red";
-    enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
-}
+            // Рисуем врагов
+            ctx.fillStyle = "red";
+            enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
+        }
 
         function endGame() {
             isGameRunning = false;
