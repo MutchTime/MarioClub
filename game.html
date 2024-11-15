@@ -82,7 +82,6 @@
     </style>
 </head>
 <body>
-    <!-- Экран ввода никнейма -->
     <div id="nicknameScreen">
         <h2>Введите свой никнейм:</h2>
         <input type="text" id="nicknameInput" placeholder="Никнейм">
@@ -90,28 +89,21 @@
         <button onclick="window.location.href='index.html'">Главная</button>
     </div>
 
-    <!-- Отображение баланса и здоровья игрока -->
     <div id="balance" class="hidden">Баланс: 500 руб.</div>
     <div id="playerHP" class="hidden">HP: 0</div>
-
-    <!-- Отображение количества монстров -->
     <div id="monsterCount" class="hidden">Монстров: 0</div>
-
-    <!-- Главное меню -->
     <div id="menu" class="hidden">
         <h1>Моя Игра</h1>
         <button onclick="goToCharacterSelection()">Играть</button>
         <button onclick="goToShop()">Магазин</button>
     </div>
 
-    <!-- Меню выбора персонажа -->
     <div id="characterSelection" class="hidden">
         <h2>Выберите персонажа</h2>
         <div id="characterButtons"></div>
         <button onclick="backToMenu()">Назад</button>
     </div>
 
-    <!-- Магазин -->
     <div id="shop" class="hidden">
         <h2>Магазин</h2>
         <p>Купите персонажа:</p>
@@ -121,14 +113,12 @@
         <button onclick="backToMenu()">Назад</button>
     </div>
 
-    <!-- Меню выбора карты -->
     <div id="mapSelection" class="hidden">
         <h2>Выберите карту</h2>
         <div id="mapButtons"></div>
         <button onclick="backToCharacterSelection()">Назад</button>
     </div>
 
-    <!-- Игровой канвас -->
     <canvas id="gameCanvas" width="1366" height="768"></canvas>
 
     <script>
@@ -161,7 +151,7 @@
         let monstersRemaining = 0;
         let totalMonsters = 0;
         let isGameRunning = false;
-        let selectedMap = ""; // Variable to track selected map
+        let selectedMap = "";
 
         const characterSettings = {
             "Салага": { damage: 50, hp: 50 },
@@ -174,6 +164,8 @@
             "Вторая карта": { reward: 300, totalEnemies: 90 },
             "Третья карта": { reward: 500, totalEnemies: 135 }
         };
+
+        const player = { x: 400, y: 550, speed: 5 };
 
         function initializeGame() {
             nickname = nicknameInput.value.trim();
@@ -376,7 +368,6 @@
         }
 
         function drawEntities() {
-            // Рисуем игрока с изображением
             if (playerImage.complete) {
                 ctx.drawImage(playerImage, player.x, player.y, 20, 20);
             } else {
@@ -384,11 +375,9 @@
                 ctx.fillRect(player.x, player.y, 20, 20);
             }
 
-            // Рисуем пули
             ctx.fillStyle = "yellow";
             bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 5, 5));
 
-            // Рисуем врагов
             ctx.fillStyle = "red";
             enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, 20, 20));
         }
@@ -433,7 +422,6 @@
             characterSelection.classList.remove("hidden");
         }
 
-        const player = { x: 400, y: 550, speed: 5 };
         const keys = {};
         let targetX = player.x;
         let targetY = player.y;
