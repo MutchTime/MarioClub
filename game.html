@@ -151,6 +151,10 @@
         let isGameRunning = false;
         let selectedMap = "";
 
+        let currentStage = 1;
+        const totalStages = 7;
+        let baseEnemyCount = 7;
+
         const characterSettings = {
             "Салага": { damage: 50, hp: 50 },
             "Солдат": { damage: 50, hp: 75 },
@@ -260,21 +264,15 @@
 
         function initEnemies() {
             enemies = [];
+            let enemyCount = Math.floor(baseEnemyCount * Math.pow(1.5, currentStage - 1));
             
-            // Спавн 7 монстров с левой стороны стенки
-            for (let i = 0; i < 7; i++) {
+            // Спавн монстров с левой и правой сторон
+            for (let i = 0; i < enemyCount; i++) {
+                const side = i % 2 === 0 ? 50 : gameCanvas.width - 70; // Лево или право
+                const yPosition = 100 + (i % 7) * 80; // Распределение по высоте
                 enemies.push({
-                    x: 50,
-                    y: 100 + i * 80,
-                    hp: 200
-                });
-            }
-
-            // Спавн 7 монстров с правой стороны стенки
-            for (let i = 0; i < 7; i++) {
-                enemies.push({
-                    x: gameCanvas.width - 70,
-                    y: 100 + i * 80,
+                    x: side,
+                    y: yPosition,
                     hp: 200
                 });
             }
@@ -287,6 +285,7 @@
 
         function selectMap(map) {
             selectedMap = map;
+            currentStage = 1;
             mapSelection.classList.add("hidden");
             gameCanvas.classList.remove("hidden");
             gameCanvas.style.display = "block";
@@ -348,8 +347,18 @@
             updateEnemies();
             drawEntities();
             
-            // Проверка на конец игры: если игрок побежден или все монстры уничтожены
-            if (playerHP <= 0 || monstersRemaining <= 0) {
+            // Проверка на конец этапа
+            if (monstersRemaining <= 0) {
+                if (currentStage < totalStages) {
+                    currentStage++;
+                    initEnemies(); // Начать следующий этап с увеличением количества монстров
+                } else {
+                    endGame(); // Все этапы завершены, завершить игру
+                }
+            }
+
+            // Проверка на поражение игрока
+            if (playerHP <= 0) {
                 endGame();
             } else {
                 requestAnimationFrame(gameLoop);
