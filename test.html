@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карта с Яндекс.Картами</title>
+    <title>Карта с маршрутом</title>
     <!-- Подключение API Яндекс.Карт -->
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
     <style>
         /* Установка размеров для карты */
         #map {
-            width: 100%; /* ширина карты на всю ширину экрана */
-            height: 500px; /* высота карты */
+            width: 100%;
+            height: 500px;
         }
     </style>
 </head>
 <body>
-    <h1>Моя карта</h1>
+    <h1>Маршрут на карте</h1>
     <!-- Контейнер для карты -->
     <div id="map"></div>
 
@@ -24,17 +24,33 @@
         ymaps.ready(init);
 
         function init() {
-            // Создание экземпляра карты и привязка её к контейнеру с id "map"
+            // Создание карты
             var map = new ymaps.Map("map", {
-                center: [47.989604, 37.920143], // Координаты центра карты Донецк 47.989604, 37.920143
-                zoom: 10 // Уровень масштабирования
+                center: [55.76, 37.64], // Центр карты (Москва)
+                zoom: 7 // Масштаб карты
             });
 
-            // Добавление метки на карту
-            var placemark = new ymaps.Placemark([47.989604, 37.920143], {
-                balloonContent: 'Это Москва!'
+            // Добавление маршрута
+            var multiRoute = new ymaps.multiRouter.MultiRoute({
+                // Описание маршрута: начальная и конечная точки
+                referencePoints: [
+                    [47.989401, 37.920183], // дом 47.989401, 37.920183
+                    [47.988347, 37.918758]  // школа
+                ],
+                // Настройки маршрута
+                params: {
+                    routingMode: 'auto' // Использовать автомобильный маршрут
+                }
+            }, {
+                // Оформление маршрута
+                wayPointStartIconColor: "blue",
+                wayPointFinishIconColor: "red",
+                routeStrokeWidth: 4,
+                routeStrokeColor: "0000FF"
             });
-            map.geoObjects.add(placemark);
+
+            // Добавление маршрута на карту
+            map.geoObjects.add(multiRoute);
         }
     </script>
 </body>
