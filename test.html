@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Карта </title>
-    <!-- Подключение API Яндекс.Карт -->
+   
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=ваш_API_ключ" type="text/javascript"></script>
     <style>
         #map {
@@ -18,35 +18,35 @@
     <div id="map"></div>
 
     <script>
-        // Функция инициализации карты
+      
         ymaps.ready(init);
 
         function init() {
-            // Создаём карту
+          
             var map = new ymaps.Map("map", {
                 center: [47.989455, 37.920160], // Центр карты донецк
-                zoom: 7 // Масштаб карты
+                zoom: 12 
             });
 
-            // Добавляем начальную метку
+          
             var startPoint = new ymaps.Placemark([47.989455, 37.920160], {
                 balloonContent: "Дом"
             }, {
                 preset: 'islands#blueDotIcon'
             });
 
-            // Добавляем конечную метку
+          
             var endPoint = new ymaps.Placemark([47.988372, 37.918777], {
                 balloonContent: "Школа"
             }, {
                 preset: 'islands#redDotIcon'
             });
 
-            // Добавляем метки на карту
+       
             map.geoObjects.add(startPoint);
             map.geoObjects.add(endPoint);
 
-            // Создаём маршрут
+        
             var route = new ymaps.multiRouter.MultiRoute({
                 referencePoints: [
                     [47.989455, 37.920160], // Дом
@@ -57,7 +57,7 @@
                 }
             });
 
-            // Добавляем маршрут на карту
+      
             map.geoObjects.add(route);
         }
     </script>
