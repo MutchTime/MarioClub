@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карта с маршрутом</title>
+    <title>Карта с метками и маршрутом</title>
     <!-- Подключение API Яндекс.Карт -->
-    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=ваш_API_ключ" type="text/javascript"></script>
     <style>
         #map {
             width: 100%;
@@ -14,35 +14,50 @@
     </style>
 </head>
 <body>
-    <h1>Карта с маршрутом</h1>
+    <h1>Рабочая карта с маршрутом</h1>
     <div id="map"></div>
 
     <script>
-        // Инициализация карты
+        // Функция инициализации карты
         ymaps.ready(init);
 
         function init() {
-            // Создание карты
+            // Создаём карту
             var map = new ymaps.Map("map", {
-                center: [55.7558, 37.6173], // Москва (центральные координаты)
-                zoom: 7 // Масштаб
+                center: [55.7558, 37.6173], // Центр карты (Москва)
+                zoom: 7 // Масштаб карты
             });
 
-            // Создание маршрута между двумя точками
+            // Добавляем начальную метку
+            var startPoint = new ymaps.Placemark([55.7558, 37.6173], {
+                balloonContent: "Москва"
+            }, {
+                preset: 'islands#blueDotIcon'
+            });
+
+            // Добавляем конечную метку
+            var endPoint = new ymaps.Placemark([56.3269, 44.0059], {
+                balloonContent: "Нижний Новгород"
+            }, {
+                preset: 'islands#redDotIcon'
+            });
+
+            // Добавляем метки на карту
+            map.geoObjects.add(startPoint);
+            map.geoObjects.add(endPoint);
+
+            // Создаём маршрут
             var route = new ymaps.multiRouter.MultiRoute({
                 referencePoints: [
                     [55.7558, 37.6173], // Москва
                     [56.3269, 44.0059]  // Нижний Новгород
                 ],
                 params: {
-                    routingMode: 'auto' // Автомобильный маршрут
+                    routingMode: 'auto' // Тип маршрута: автомобильный
                 }
-            }, {
-                // Настройки отображения маршрута
-                boundsAutoApply: true // Автоматическое подстраивание карты под маршрут
             });
 
-            // Добавление маршрута на карту
+            // Добавляем маршрут на карту
             map.geoObjects.add(route);
         }
     </script>
