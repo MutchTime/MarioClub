@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карта с маршрутом и метками</title>
+    <title>Карта с маршрутом</title>
     <!-- Подключение API Яндекс.Карт -->
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
     <style>
@@ -14,8 +14,7 @@
     </style>
 </head>
 <body>
-    <h1>Карта с метками и маршрутом</h1>
-    <!-- Контейнер для карты -->
+    <h1>Карта с маршрутом</h1>
     <div id="map"></div>
 
     <script>
@@ -29,25 +28,7 @@
                 zoom: 7 // Масштаб
             });
 
-            // Добавление начальной метки
-            var startPoint = new ymaps.Placemark([55.7558, 37.6173], {
-                balloonContent: "Начальная точка: Москва"
-            }, {
-                preset: 'islands#blueIcon'
-            });
-
-            // Добавление конечной метки
-            var endPoint = new ymaps.Placemark([56.3269, 44.0059], {
-                balloonContent: "Конечная точка: Нижний Новгород"
-            }, {
-                preset: 'islands#redIcon'
-            });
-
-            // Добавление меток на карту
-            map.geoObjects.add(startPoint);
-            map.geoObjects.add(endPoint);
-
-            // Создание маршрута между метками
+            // Создание маршрута между двумя точками
             var route = new ymaps.multiRouter.MultiRoute({
                 referencePoints: [
                     [55.7558, 37.6173], // Москва
@@ -56,6 +37,9 @@
                 params: {
                     routingMode: 'auto' // Автомобильный маршрут
                 }
+            }, {
+                // Настройки отображения маршрута
+                boundsAutoApply: true // Автоматическое подстраивание карты под маршрут
             });
 
             // Добавление маршрута на карту
