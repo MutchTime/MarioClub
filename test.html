@@ -26,12 +26,12 @@
         function init() {
             // Создание экземпляра карты и привязка её к контейнеру с id "map"
             var map = new ymaps.Map("map", {
-                center: [47.98, 37.92], // Координаты центра карты Донецк 47.989604, 37.920143
+                center: [47.989604, 37.920143], // Координаты центра карты Донецк 47.989604, 37.920143
                 zoom: 10 // Уровень масштабирования
             });
 
             // Добавление метки на карту
-            var placemark = new ymaps.Placemark([55.76, 37.64], {
+            var placemark = new ymaps.Placemark([47.989604, 37.920143], {
                 balloonContent: 'Это Москва!'
             });
             map.geoObjects.add(placemark);
