@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карта с метками и маршрутом</title>
+    <title>Карта </title>
     <!-- Подключение API Яндекс.Карт -->
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=ваш_API_ключ" type="text/javascript"></script>
     <style>
@@ -24,20 +24,20 @@
         function init() {
             // Создаём карту
             var map = new ymaps.Map("map", {
-                center: [55.7558, 37.6173], // Центр карты (Москва)
+                center: [47.989455, 37.920160], // Центр карты донецк
                 zoom: 7 // Масштаб карты
             });
 
             // Добавляем начальную метку
-            var startPoint = new ymaps.Placemark([55.7558, 37.6173], {
-                balloonContent: "Москва"
+            var startPoint = new ymaps.Placemark([47.989455, 37.920160], {
+                balloonContent: "Дом"
             }, {
                 preset: 'islands#blueDotIcon'
             });
 
             // Добавляем конечную метку
-            var endPoint = new ymaps.Placemark([56.3269, 44.0059], {
-                balloonContent: "Нижний Новгород"
+            var endPoint = new ymaps.Placemark([47.988372, 37.918777], {
+                balloonContent: "Школа"
             }, {
                 preset: 'islands#redDotIcon'
             });
@@ -49,11 +49,11 @@
             // Создаём маршрут
             var route = new ymaps.multiRouter.MultiRoute({
                 referencePoints: [
-                    [55.7558, 37.6173], // Москва
-                    [56.3269, 44.0059]  // Нижний Новгород
+                    [47.989455, 37.920160], // Дом
+                    [47.988372, 37.918777]  // Школа
                 ],
                 params: {
-                    routingMode: 'auto' // Тип маршрута: автомобильный
+                    routingMode: 'auto' 
                 }
             });
 
