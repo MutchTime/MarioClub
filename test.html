@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Карта с маршрутом</title>
+    <title>Я Карта </title>
 
-    <!-- Подключение API Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap&libraries=directions" 
-            async defer></script>
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=edb094f0-e5bc-400f-90b3-3f170f3fb217" type="text/javascript"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,54 +27,57 @@
     </style>
 </head>
 <body>
-    <h1>Маршрут на Google Карте</h1>
+    <h1>Маршрут на Яндекс.Карте</h1>
     <div id="map"></div>
 
     <script>
-        // Инициализация карты
-        function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
-                center: {lat: 47.991, lng: 37.860}, // Центр карты (между двумя точками)
-                zoom: 14
-            });
+        ymaps.ready(init);
 
-            // Создаем объекты DirectionsService и DirectionsRenderer для маршрута
-            var directionsService = new google.maps.DirectionsService();
-            var directionsRenderer = new google.maps.DirectionsRenderer();
-            directionsRenderer.setMap(map);
+        function init() {
+            try {
+             
+                var map = new ymaps.Map("map", {
+                    center: [47.991, 37.860], // Центр карты 
+                    zoom: 14 
+                });
 
-            // Координаты начальной и конечной точек
-            var start = {lat: 47.989455, lng: 37.920160};  // Дом
-            var end = {lat: 47.994061, lng: 37.804125};    // ДОННТУ
+            
+                var startPoint = new ymaps.Placemark([47.989455, 37.920160], {
+                    balloonContent: "Дом"
+                }, {
+                    preset: 'islands#blueDotIcon'
+                });
 
-            // Запрос на прокладывание маршрута
-            var request = {
-                origin: start,
-                destination: end,
-                travelMode: google.maps.TravelMode.DRIVING // Режим маршрута: автомобиль
-            };
+                var endPoint = new ymaps.Placemark([47.994061, 37.804125], {
+                    balloonContent: "ДОННТУ"
+                }, {
+                    preset: 'islands#redDotIcon' 
+                });
 
-            // Прокладываем маршрут
-            directionsService.route(request, function(result, status) {
-                if (status == google.maps.DirectionsStatus.OK) {
-                    directionsRenderer.setDirections(result);
-                } else {
-                    alert("Не удалось проложить маршрут: " + status);
-                }
-            });
+              
+                map.geoObjects.add(startPoint);
+                map.geoObjects.add(endPoint);
 
-            // Добавляем маркеры для начальной и конечной точки
-            var markerStart = new google.maps.Marker({
-                position: start,
-                map: map,
-                title: 'Дом'
-            });
+             
+                var route = new ymaps.multiRouter.MultiRoute({
+                    referencePoints: [
+                        [47.989455, 37.920160], // Начальная точка (Дом)
+                        [47.994061, 37.804125]  // Конечная точка (ДОННТУ)
+                    ],
+                    params: {
+                        routingMode: 'auto'
+                    }
+                }, {
+                    boundsAutoApply: true 
 
-            var markerEnd = new google.maps.Marker({
-                position: end,
-                map: map,
-                title: 'ДОННТУ'
-            });
+             
+                map.geoObjects.add(route);
+               
+                console.log('Маршрут был добавлен');
+            } catch (error) {
+                
+                console.error('Ошибка при загрузке карты:', error);
+            }
         }
     </script>
 </body>
