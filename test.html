@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Яндекс Карта с маршрутом</title>
 
-    <!-- Подключение API Яндекс.Карт (обязательно замените "ваш_API_ключ" на свой ключ) -->
-    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=ваш_API_ключ" type="text/javascript"></script>
+    <!-- Подключение API Яндекс.Карт -->
+    <script src="7927b5b5-554b-4cf1-8c68-191b745f17ea"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,9 +35,9 @@
         ymaps.ready(init);
 
         function init() {
-            // Создаем карту
+            // Создаём карту с центром между двумя точками
             var map = new ymaps.Map("map", {
-                center: [47.991, 37.860], // Центр карты (между двумя точками)
+                center: [47.991, 37.860], // Центр карты (среднее между двумя точками)
                 zoom: 14 // Масштаб карты
             });
 
@@ -59,7 +59,7 @@
             map.geoObjects.add(startPoint);
             map.geoObjects.add(endPoint);
 
-            // Создаем маршрут
+            // Создаём маршрут
             var route = new ymaps.multiRouter.MultiRoute({
                 referencePoints: [
                     [47.989455, 37.920160], // Начальная точка (Дом)
