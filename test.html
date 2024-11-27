@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Яндекс Карта с маршрутом</title>
 
-
+    <!-- Подключение API Яндекс.Карт с вашим API-ключом -->
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=7927b5b5-554b-4cf1-8c68-191b745f17ea" type="text/javascript"></script>
     <style>
         body {
@@ -35,44 +35,44 @@
         ymaps.ready(init);
 
         function init() {
-          
+            // Создаём карту с центром между двумя точками
             var map = new ymaps.Map("map", {
-                center: [47.991, 37.860], 
-                zoom: 14 
+                center: [47.991, 37.860], // Центр карты (среднее между двумя точками)
+                zoom: 14 // Масштаб карты
             });
 
-          
+            // Начальная точка (Дом)
             var startPoint = new ymaps.Placemark([47.989455, 37.920160], {
                 balloonContent: "Дом"
             }, {
-                preset: 'islands#blueDotIcon' 
+                preset: 'islands#blueDotIcon' // Синий маркер для начала
             });
 
-           
+            // Конечная точка (ДОННТУ)
             var endPoint = new ymaps.Placemark([47.994061, 37.804125], {
                 balloonContent: "ДОННТУ"
             }, {
-                preset: 'islands#redDotIcon' 
+                preset: 'islands#redDotIcon' // Красный маркер для конца
             });
 
-           
+            // Добавляем метки на карту
             map.geoObjects.add(startPoint);
             map.geoObjects.add(endPoint);
 
-          
+            // Создаём маршрут
             var route = new ymaps.multiRouter.MultiRoute({
                 referencePoints: [
                     [47.989455, 37.920160], // Начальная точка (Дом)
                     [47.994061, 37.804125]  // Конечная точка (ДОННТУ)
                 ],
                 params: {
-                    routingMode: 'auto' 
+                    routingMode: 'auto' // Автомобильный режим маршрута
                 }
             }, {
-                boundsAutoApply: true
+                boundsAutoApply: true // Подстраиваем карту под маршрут
             });
 
-         
+            // Добавляем маршрут на карту
             map.geoObjects.add(route);
         }
     </script>
