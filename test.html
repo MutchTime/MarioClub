@@ -35,45 +35,53 @@
         ymaps.ready(init);
 
         function init() {
-            // Создаём карту с центром между двумя точками
-            var map = new ymaps.Map("map", {
-                center: [47.991, 37.860], // Центр карты (среднее между двумя точками)
-                zoom: 14 // Масштаб карты
-            });
+            try {
+                // Создаём карту с центром между двумя точками
+                var map = new ymaps.Map("map", {
+                    center: [47.991, 37.860], // Центр карты (среднее между двумя точками)
+                    zoom: 14 // Масштаб карты
+                });
 
-            // Начальная точка (Дом)
-            var startPoint = new ymaps.Placemark([47.989455, 37.920160], {
-                balloonContent: "Дом"
-            }, {
-                preset: 'islands#blueDotIcon' // Синий маркер для начала
-            });
+                // Начальная точка (Дом)
+                var startPoint = new ymaps.Placemark([47.989455, 37.920160], {
+                    balloonContent: "Дом"
+                }, {
+                    preset: 'islands#blueDotIcon' // Синий маркер для начала
+                });
 
-            // Конечная точка (ДОННТУ)
-            var endPoint = new ymaps.Placemark([47.994061, 37.804125], {
-                balloonContent: "ДОННТУ"
-            }, {
-                preset: 'islands#redDotIcon' // Красный маркер для конца
-            });
+                // Конечная точка (ДОННТУ)
+                var endPoint = new ymaps.Placemark([47.994061, 37.804125], {
+                    balloonContent: "ДОННТУ"
+                }, {
+                    preset: 'islands#redDotIcon' // Красный маркер для конца
+                });
 
-            // Добавляем метки на карту
-            map.geoObjects.add(startPoint);
-            map.geoObjects.add(endPoint);
+                // Добавляем метки на карту
+                map.geoObjects.add(startPoint);
+                map.geoObjects.add(endPoint);
 
-            // Создаём маршрут
-            var route = new ymaps.multiRouter.MultiRoute({
-                referencePoints: [
-                    [47.989455, 37.920160], // Начальная точка (Дом)
-                    [47.994061, 37.804125]  // Конечная точка (ДОННТУ)
-                ],
-                params: {
-                    routingMode: 'auto' // Автомобильный режим маршрута
-                }
-            }, {
-                boundsAutoApply: true // Подстраиваем карту под маршрут
-            });
+                // Создаём маршрут
+                var route = new ymaps.multiRouter.MultiRoute({
+                    referencePoints: [
+                        [47.989455, 37.920160], // Начальная точка (Дом)
+                        [47.994061, 37.804125]  // Конечная точка (ДОННТУ)
+                    ],
+                    params: {
+                        routingMode: 'auto' // Автомобильный режим маршрута
+                    }
+                }, {
+                    boundsAutoApply: true // Подстраиваем карту под маршрут
+                });
 
-            // Добавляем маршрут на карту
-            map.geoObjects.add(route);
+                // Добавляем маршрут на карту
+                map.geoObjects.add(route);
+                
+                // Отладочная информация в консоли:
+                console.log('Маршрут был добавлен');
+            } catch (error) {
+                // В случае ошибки выводим сообщение в консоль
+                console.error('Ошибка при загрузке карты:', error);
+            }
         }
     </script>
 </body>
